@@ -614,6 +614,8 @@ class Game {
                     this.showNotification(interactionObj.message, 'warning');
                 } else if (interactionObj.type === 'requires_intel') {
                     this.showNotification(interactionObj.message, 'warning');
+                } else if (interactionObj.type === 'requires_item') {
+                    this.showNotification(interactionObj.message, 'warning');
                 } else if (interactionObj.id) {
                     // Regular interactive object (bomb, intel) - show math question
                     this.gameState.isPaused = true;
@@ -662,6 +664,9 @@ class Game {
     }
 
     start() {
+        console.log('Starting game loop');
+        console.log('Canvas dimensions:', this.canvas.width, 'x', this.canvas.height);
+        console.log('Map system:', this.gameState.mapSystem);
         this.isRunning = true;
         this.lastTime = performance.now();
         this.gameLoop(performance.now());

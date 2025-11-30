@@ -295,5 +295,98 @@
       "y": 15,
       "type": "obstacle"
     }
+  ],
+  "playerStart": {
+    "x": 240,
+    "y": 600
+  },
+  "interactiveObjects": [
+    {
+      "id": "bomb-2-1",
+      "type": "bomb",
+      "x": 520,
+      "y": 600,
+      "width": 30,
+      "height": 30,
+      "requires": "intel"
+    },
+    {
+      "id": "loot-2-1",
+      "type": "loot",
+      "x": 840,
+      "y": 520,
+      "width": 25,
+      "height": 25
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "key-2-1",
+      "type": "key",
+      "x": 240,
+      "y": 200,
+      "width": 20,
+      "height": 20
+    },
+    {
+      "id": "secret-2-1",
+      "type": "secret",
+      "x": 400,
+      "y": 500,
+      "width": 20,
+      "height": 20
+    },
+    {
+      "id": "money-2-1",
+      "type": "money",
+      "x": 220,
+      "y": 360,
+      "width": 20,
+      "height": 20
+    },
+    {
+      "id": "money-2-2",
+      "type": "money",
+      "x": 480,
+      "y": 200,
+      "width": 20,
+      "height": 20
+    },
+    {
+      "id": "health-2-1",
+      "type": "health",
+      "x": 520,
+      "y": 320,
+      "width": 20,
+      "height": 20
+    },
+    {
+      "id": "health-2-2",
+      "type": "health",
+      "x": 200,
+      "y": 640,
+      "width": 20,
+      "height": 20
+    }
+  ],
+  "doors": [
+    {
+      "id": "door-2-1",
+      "x": 400,
+      "y": 200,
+      "width": 40,
+      "height": 40,
+      "requires": "key",
+      "unlocked": false
+    },
+    {
+      "id": "door-2-override-1",
+      "x": 360,
+      "y": 720,
+      "width": 40,
+      "height": 40,
+      "requires": "key",
+      "unlocked": false
+    }
   ]
 }

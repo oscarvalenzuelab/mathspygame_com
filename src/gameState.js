@@ -573,14 +573,59 @@ class GameState {
 
             // Check if player is close and action key was just pressed
             if (distance < 50 && inputManager.isActionPressed()) {
-                if (obj.type === 'bomb' && !this.hasIntel) {
-                    return { type: 'requires_intel', message: 'You need the intel briefcase to disarm bombs!' };
+                const requirement = this.evaluateInteractionRequirement(obj);
+                if (!requirement.allowed) {
+                    if (requirement.type === 'requires_item') {
+                        inputManager.onDoorBlocked?.();
+                    }
+                    return { type: requirement.type, message: requirement.message };
                 }
                 return obj;
             }
         }
 
         return null;
+    }
+
+    evaluateInteractionRequirement(obj) {
+        if (!obj.requires) {
+            return { allowed: true };
+        }
+
+        if (obj.requires === 'intel') {
+            if (this.hasIntel) {
+                return { allowed: true };
+            }
+            return {
+                allowed: false,
+                type: 'requires_intel',
+                message: obj.requirementMessage || 'You need the intel briefcase to disarm bombs!'
+            };
+        }
+
+        if (obj.requires === 'key') {
+            if (this.inventory.keys > 0) {
+                return { allowed: true };
+            }
+            return {
+                allowed: false,
+                type: 'requires_item',
+                message: obj.requirementMessage || 'You need a key to use this!'
+            };
+        }
+
+        if (obj.requires === 'secret') {
+            if (this.inventory.secrets > 0) {
+                return { allowed: true };
+            }
+            return {
+                allowed: false,
+                type: 'requires_item',
+                message: obj.requirementMessage || 'You need the secret code to use this!'
+            };
+        }
+
+        return { allowed: true };
     }
 
     unlockDoorInMap(door) {

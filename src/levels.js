@@ -7,6 +7,41 @@ const PLAYER_STARTS = [
     { x: 920, y: 280 }
 ];
 
+const TILE_SIZE = LEVEL_SETTINGS.tileSize || 40;
+const DEFAULT_SIZES = {
+    player: { width: 30, height: 30 },
+    bomb: { width: 30, height: 30 },
+    loot: { width: 25, height: 25 },
+    collectible: { width: 20, height: 20 },
+    door: { width: TILE_SIZE, height: TILE_SIZE }
+};
+
+function resolveRect(definition = {}, fallback = {}) {
+    const pickCoord = (primary, secondary, gridValue, defaultValue) => {
+        if (typeof primary === 'number') return primary;
+        if (typeof secondary === 'number') return secondary;
+        if (typeof gridValue === 'number') return gridValue * TILE_SIZE;
+        return defaultValue;
+    };
+    const pickSize = (primary, gridValue, defaultValue) => {
+        if (typeof primary === 'number') return primary;
+        if (typeof gridValue === 'number') return gridValue * TILE_SIZE;
+        return defaultValue;
+    };
+
+    return {
+        x: pickCoord(definition.x, definition.pixelX, definition.gridX, fallback.x ?? 0),
+        y: pickCoord(definition.y, definition.pixelY, definition.gridY, fallback.y ?? 0),
+        width: pickSize(definition.width ?? definition.pixelWidth, definition.gridWidth, fallback.width ?? DEFAULT_SIZES.collectible.width),
+        height: pickSize(definition.height ?? definition.pixelHeight, definition.gridHeight, fallback.height ?? DEFAULT_SIZES.collectible.height)
+    };
+}
+
+function resolvePoint(definition = {}, fallback = {}) {
+    const rect = resolveRect(definition, fallback);
+    return { x: rect.x, y: rect.y };
+}
+
 const ENEMY_SPAWNS = [
     { x: 200, y: 150, axis: 'x', range: 160 },
     { x: 520, y: 150, axis: 'x', range: 140 },
@@ -94,16 +129,15 @@ class LevelManager {
     }
 
     buildLevel(spec) {
+        const missionConfig = LEVEL_LAYOUTS[spec.level] || {};
         const layout = this.composeLayout(spec.level);
         const map = this.createMap(LEVEL_SETTINGS.width, LEVEL_SETTINGS.height, layout);
-        const playerStart = this.getPlayerStart(spec.level);
+        const defaultStart = this.getPlayerStart(spec.level);
+        const playerStart = missionConfig.playerStart ? resolvePoint(missionConfig.playerStart, defaultStart) : defaultStart;
         const enemies = this.generateEnemies(spec);
-        const interactiveObjects = [
-            ...this.generateBombs(spec),
-            ...this.generateLoot(spec)
-        ];
-        const collectibles = this.generateCollectibles(spec);
-        const doors = this.generateDoors(spec);
+        const interactiveObjects = this.buildInteractiveObjects(spec, missionConfig);
+        const collectibles = this.buildCollectibles(spec, missionConfig);
+        const doors = this.buildDoors(spec, missionConfig);
 
         return {
             name: `Mission ${spec.level}`,
@@ -182,7 +216,8 @@ class LevelManager {
                 width: 30,
                 height: 30,
                 active: true,
-                solved: false
+                solved: false,
+                requires: 'intel'
             });
         }
         return bombs;
@@ -207,7 +242,63 @@ class LevelManager {
         return loot;
     }
 
-    generateCollectibles(spec) {
+    buildInteractiveObjects(spec, missionConfig) {
+        if (missionConfig && Array.isArray(missionConfig.interactiveObjects)) {
+            return missionConfig.interactiveObjects.map((definition, index) =>
+                this.createInteractiveObjectFromDefinition(spec.level, definition, index)
+            );
+        }
+        return [
+            ...this.generateBombs(spec),
+            ...this.generateLoot(spec)
+        ];
+    }
+
+    createInteractiveObjectFromDefinition(level, definition, index) {
+        const type = definition.type || 'bomb';
+        const defaults = type === 'loot' ? DEFAULT_SIZES.loot : DEFAULT_SIZES.bomb;
+        const rect = resolveRect(definition, defaults);
+        const requires = definition.requires !== undefined ? definition.requires : (type === 'bomb' ? 'intel' : null);
+        return {
+            id: definition.id || `${type}-${level}-${index + 1}`,
+            type,
+            x: rect.x,
+            y: rect.y,
+            width: rect.width ?? defaults.width,
+            height: rect.height ?? defaults.height,
+            active: definition.active !== false,
+            solved: false,
+            collected: false,
+            requires,
+            requirementMessage: definition.requirementMessage,
+            consumeRequirement: Boolean(definition.consumeRequirement)
+        };
+    }
+
+    buildCollectibles(spec, missionConfig) {
+        if (missionConfig && Array.isArray(missionConfig.collectibles)) {
+            return missionConfig.collectibles.map((definition, index) =>
+                this.createCollectibleFromDefinition(spec.level, definition, index)
+            );
+        }
+        return this.generateDefaultCollectibles(spec);
+    }
+
+    createCollectibleFromDefinition(level, definition, index) {
+        const rect = resolveRect(definition, DEFAULT_SIZES.collectible);
+        const type = definition.type || 'key';
+        return {
+            id: definition.id || `${type}-${level}-${index + 1}`,
+            type,
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height,
+            collected: false
+        };
+    }
+
+    generateDefaultCollectibles(spec) {
         const items = [];
         const addItems = (type, count, spots) => {
             const max = spots.length;
@@ -234,7 +325,29 @@ class LevelManager {
         return items;
     }
 
-    generateDoors(spec) {
+    buildDoors(spec, missionConfig) {
+        if (missionConfig && Array.isArray(missionConfig.doors)) {
+            return missionConfig.doors.map((definition, index) =>
+                this.createDoorFromDefinition(spec.level, definition, index)
+            );
+        }
+        return this.generateDefaultDoors(spec);
+    }
+
+    createDoorFromDefinition(level, definition, index) {
+        const rect = resolveRect(definition, DEFAULT_SIZES.door);
+        return {
+            id: definition.id || `door-${level}-${index + 1}`,
+            x: rect.x,
+            y: rect.y,
+            width: rect.width ?? DEFAULT_SIZES.door.width,
+            height: rect.height ?? DEFAULT_SIZES.door.height,
+            requires: definition.requires || 'key',
+            unlocked: !!definition.unlocked
+        };
+    }
+
+    generateDefaultDoors(spec) {
         const doors = [];
         const thresholds = [0, 10, 25];
         thresholds.forEach((threshold, index) => {

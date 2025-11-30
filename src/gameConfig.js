@@ -37,5 +37,6 @@ export const LEVEL_ITEM_CONFIG = createLevelSpecs();
 export const LEVEL_SETTINGS = {
     width: 30,
     height: 20,
-    totalLevels: TOTAL_LEVELS
+    totalLevels: TOTAL_LEVELS,
+    tileSize: 40
 };
