@@ -11,7 +11,9 @@ class Game {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
         this.setupCanvas();
-        
+        this.deviceWarning = document.getElementById('device-warning');
+        this.validateDeviceSupport();
+
         this.inputManager = new InputManager(this.canvas);
         this.gameState = new GameState(this.canvas.width, this.canvas.height);
         this.renderer = new Renderer(this.canvas);
@@ -49,6 +51,16 @@ class Game {
         }
         this.setupMusicAutoStart();
         this.setupAudioHooks();
+        window.addEventListener('resize', () => this.validateDeviceSupport());
+    }
+
+    validateDeviceSupport() {
+        if (!this.deviceWarning) return;
+        const minWidth = 900;
+        const minHeight = 600;
+        const isSupported = window.innerWidth >= minWidth && window.innerHeight >= minHeight;
+        this.deviceWarning.classList.toggle('hidden', isSupported);
+        this.canvas.parentElement.classList.toggle('blurred', !isSupported);
     }
 
     loadLevel(levelNumber, options = {}) {
