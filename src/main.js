@@ -7,6 +7,7 @@ import MissionManager from './missions.js';
 import LevelManager from './levels.js';
 import AudioManager from './audio.js';
 import DevEditor from './devEditor.js';
+import { loadLayouts } from './levelLayouts/layoutLoader.js?v=20231130';
 
 class Game {
     constructor() {
@@ -668,8 +669,9 @@ class Game {
 }
 
 // Initialize game when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
+        await loadLayouts();
         const game = new Game();
         game.start();
         console.log('Game initialized successfully');
