@@ -76,7 +76,7 @@ const DOOR_SPOTS = [
 ];
 
 const DOOR_OVERRIDES = {
-    2: [{ x: 360, y: 560, requires: 'key' }]
+    2: [{ x: 360, y: 720, requires: 'key' }]
 };
 
 class LevelManager {
