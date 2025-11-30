@@ -333,6 +333,8 @@ class Game {
         this.agentNameInput = document.getElementById('agent-name-input');
         const saveBtn = document.getElementById('agent-save-btn');
         const changeBtn = document.getElementById('agent-name-change-btn');
+        const restartMissionBtn = document.getElementById('restart-mission-btn');
+        const exitGameBtn = document.getElementById('exit-game-btn');
         const storedName = this.allowPersistence ? window.localStorage.getItem('af_agent_name') : null;
         this.agentName = storedName || '';
         this.updateAgentNameLabel();
@@ -342,6 +344,12 @@ class Game {
         }
         if (saveBtn) {
             saveBtn.addEventListener('click', () => this.saveAgentName());
+        }
+        if (restartMissionBtn) {
+            restartMissionBtn.addEventListener('click', () => this.restartMission());
+        }
+        if (exitGameBtn) {
+            exitGameBtn.addEventListener('click', () => this.exitGame());
         }
         if (this.agentNameInput) {
             this.agentNameInput.addEventListener('keypress', (e) => {
@@ -508,6 +516,24 @@ class Game {
         
         // Restart game loop
         this.start();
+    }
+
+    restartMission() {
+        const currentLevel = this.gameState.currentLevel || 1;
+        this.gameState.gameOver = false;
+        this.gameState.won = false;
+        this.gameState.isPaused = false;
+        this.loadLevel(currentLevel);
+        this.requestSave();
+        this.showNotification(`Restarted mission ${currentLevel}`, 'warning');
+    }
+
+    exitGame() {
+        if (this.allowPersistence) {
+            window.localStorage.removeItem('af_agent_name');
+        }
+        this.clearSave();
+        window.location.reload();
     }
 
     update(deltaTime) {
