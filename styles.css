@@ -160,7 +160,6 @@ body {
 }
 
 .control-button {
-    margin-top: 10px;
     width: 100%;
     padding: 8px 12px;
     border-radius: 6px;
@@ -170,6 +169,21 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.control-buttons-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.control-buttons-row .control-button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    padding: 10px;
 }
 
 .control-button:hover {
