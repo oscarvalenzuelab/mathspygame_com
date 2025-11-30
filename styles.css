@@ -463,3 +463,59 @@ body {
 #restart-btn:hover, #restart-win-btn:hover {
     background: #45a049;
 }
+#map-editor .modal-content.map-editor {
+    max-width: 900px;
+}
+
+#map-editor-grid {
+    max-height: 500px;
+    overflow: auto;
+    margin: 15px 0;
+    border: 1px solid #444;
+    padding: 10px;
+    background: #1a1a1a;
+}
+
+.editor-row {
+    display: flex;
+}
+
+.editor-cell {
+    width: 24px;
+    height: 24px;
+    margin: 1px;
+    border: 1px solid #555;
+    background: #2b2b2b;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.editor-cell.tile-wall {
+    background: #555;
+}
+.editor-cell.tile-door_locked {
+    background: #8B4513;
+}
+.editor-cell.tile-door_unlocked {
+    background: #3a3a3a;
+}
+.editor-cell.tile-obstacle {
+    background: #9c27b0;
+}
+
+.editor-toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#map-editor-export-output {
+    width: 100%;
+    background: #111;
+    color: #fff;
+    border-radius: 6px;
+    border: 1px solid #444;
+    padding: 10px;
+}

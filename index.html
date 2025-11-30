@@ -87,6 +87,9 @@
                     <button id="dev-level-btn" class="control-button hidden" title="Jump Level">
                         <i class="bi bi-fast-forward"></i>
                     </button>
+                    <button id="dev-editor-btn" class="control-button hidden" title="Open Map Editor">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -106,6 +109,28 @@
             <div class="modal-buttons">
                 <button id="agent-save-btn">Save</button>
             </div>
+        </div>
+    </div>
+
+    <div id="map-editor" class="modal hidden">
+        <div class="modal-content map-editor">
+            <h2>Map Editor (Dev)</h2>
+            <div class="editor-toolbar">
+                <label>Paint Tile:
+                    <select id="map-editor-type">
+                        <option value="floor">Floor</option>
+                        <option value="wall">Wall</option>
+                        <option value="door_locked">Locked Door</option>
+                        <option value="door_unlocked">Unlocked Door</option>
+                        <option value="obstacle">Obstacle</option>
+                    </select>
+                </label>
+                <button id="map-editor-export-btn">Export Layout</button>
+                <button id="map-editor-apply-btn">Apply</button>
+                <button id="map-editor-close-btn">Close</button>
+            </div>
+            <div id="map-editor-grid"></div>
+            <textarea id="map-editor-export-output" rows="6" readonly></textarea>
         </div>
     </div>
 

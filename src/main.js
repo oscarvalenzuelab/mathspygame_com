@@ -6,6 +6,7 @@ import MathEngine from './mathEngine.js';
 import MissionManager from './missions.js';
 import LevelManager from './levels.js';
 import AudioManager from './audio.js';
+import DevEditor from './devEditor.js';
 
 class Game {
     constructor() {
@@ -22,6 +23,7 @@ class Game {
         this.levelManager = new LevelManager();
         this.notificationContainer = document.getElementById('notification-container');
         this.audioManager = new AudioManager();
+        this.devEditor = new DevEditor(this);
         this.gameState.setChangeListener(() => this.requestSave());
         this.allowPersistence = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
         this.pendingSave = false;
@@ -338,6 +340,7 @@ class Game {
         const restartMissionBtn = document.getElementById('restart-mission-btn');
         const exitGameBtn = document.getElementById('exit-game-btn');
         this.devLevelBtn = document.getElementById('dev-level-btn');
+        this.devEditorBtn = document.getElementById('dev-editor-btn');
         const storedName = this.allowPersistence ? window.localStorage.getItem('af_agent_name') : null;
         this.agentName = storedName || '';
         this.updateAgentNameLabel();
@@ -356,6 +359,9 @@ class Game {
         }
         if (this.devLevelBtn) {
             this.devLevelBtn.addEventListener('click', () => this.showDevLevelPrompt());
+        }
+        if (this.devEditorBtn) {
+            this.devEditorBtn.addEventListener('click', () => this.showDevEditor());
         }
         if (this.agentNameInput) {
             this.agentNameInput.addEventListener('keypress', (e) => {
@@ -380,6 +386,9 @@ class Game {
         if (this.devLevelBtn) {
             const isDev = this.agentName?.toLowerCase() === 'alkamod';
             this.devLevelBtn.classList.toggle('hidden', !isDev);
+            if (this.devEditorBtn) {
+                this.devEditorBtn.classList.toggle('hidden', !isDev);
+            }
         }
     }
 
@@ -533,6 +542,11 @@ class Game {
         this.loadLevel(clamped, { preserveDefeated: false });
         this.requestSave();
         this.showNotification(`Jumped to mission ${clamped}`, 'info');
+    }
+
+    showDevEditor() {
+        if (this.awaitingAgentName || !this.devEditor) return;
+        this.devEditor.open();
     }
 
     restart() {
