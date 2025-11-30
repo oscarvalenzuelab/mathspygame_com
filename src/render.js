@@ -322,6 +322,35 @@ class Renderer {
         }
     }
 
+    drawInteractiveInfo(obj, x, y) {
+        const label = this.getInteractiveDescription(obj);
+        if (!label) return;
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        this.ctx.strokeStyle = '#ffd700';
+        this.ctx.lineWidth = 1;
+        this.ctx.font = '11px Arial';
+        this.ctx.textAlign = 'center';
+        const padding = 6;
+        const width = Math.max(140, this.ctx.measureText(label).width + padding * 2);
+        const height = 26;
+        this.ctx.fillRect(x - width/2, y - height, width, height);
+        this.ctx.strokeRect(x - width/2, y - height, width, height);
+        this.ctx.fillStyle = '#fff';
+        this.ctx.fillText(label, x, y - height/2 + 3);
+        this.ctx.restore();
+    }
+
+    getInteractiveDescription(obj) {
+        if (obj.type === 'loot' && !obj.collected) {
+            return 'Intel: collect to disarm bombs';
+        }
+        if (obj.type === 'bomb' && !obj.solved) {
+            return 'Bomb: E + solve math';
+        }
+        return null;
+    }
+
     drawDoorRequirementHint(door, x, y) {
         const requirementText = door.requires === 'secret' ? 'Requires CODE' : 'Requires KEY';
         this.ctx.save();
