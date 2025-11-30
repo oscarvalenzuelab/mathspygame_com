@@ -20,6 +20,10 @@ class Game {
         this.levelManager = new LevelManager();
         this.notificationContainer = document.getElementById('notification-container');
         this.audioManager = new AudioManager();
+        this.gameState.setChangeListener(() => this.requestSave());
+        this.allowPersistence = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+        this.pendingSave = false;
+        this.saveAccumulator = 0;
         
         // Setup entity container after renderer is created
         this.renderer.setupEntityContainer();
@@ -28,17 +32,80 @@ class Game {
         this.isRunning = false;
         
         this.setupUI();
-        this.loadLevel(1);
+        const restored = this.restoreProgress();
+        if (!restored) {
+            this.loadLevel(1);
+            this.requestSave();
+            this.writeSave(true);
+        }
         this.setupMusicAutoStart();
         this.setupAudioHooks();
     }
 
-    loadLevel(levelNumber, options = {}) {
+    loadLevel(levelNumber) {
         const levelData = this.levelManager.getLevel(levelNumber);
-        this.gameState.loadLevel(levelData, options);
+        this.gameState.loadLevel(levelData);
         this.gameState.currentLevel = levelNumber;
         this.missionManager.initializeLevel(levelNumber);
         this.renderer.updateMissionPanel(this.missionManager);
+    }
+
+    restoreProgress() {
+        if (!this.allowPersistence) {
+            return false;
+        }
+
+        try {
+            const raw = window.localStorage.getItem('af_save');
+            if (!raw) return false;
+            const data = JSON.parse(raw);
+            const totalLevels = this.levelManager.getTotalLevels();
+            const targetLevel = Math.max(1, Math.min(totalLevels, data.currentLevel || 1));
+            this.loadLevel(targetLevel);
+            if (data.gameState) {
+                this.gameState.applySaveData(data.gameState);
+            }
+            if (data.missions) {
+                this.missionManager.loadFromData(data.missions);
+                this.renderer.updateMissionPanel(this.missionManager);
+            }
+            this.requestSave();
+            return true;
+        } catch (error) {
+            console.warn('Failed to restore save data', error);
+            return false;
+        }
+    }
+
+    requestSave() {
+        if (!this.allowPersistence) return;
+        this.pendingSave = true;
+        this.saveAccumulator = 0;
+    }
+
+    writeSave(force = false) {
+        if (!this.allowPersistence) return;
+        try {
+            const payload = {
+                version: 1,
+                currentLevel: this.gameState.currentLevel,
+                gameState: this.gameState.getSaveData(),
+                missions: this.missionManager.getSaveData(),
+                timestamp: Date.now()
+            };
+            window.localStorage.setItem('af_save', JSON.stringify(payload));
+        } catch (error) {
+            console.warn('Failed to persist save data', error);
+        }
+    }
+
+    clearSave() {
+        if (!this.allowPersistence) return;
+        try {
+            window.localStorage.removeItem('af_save');
+        } catch (error) {
+            console.warn('Failed to clear save data', error);
+        }
     }
 
     setupCanvas() {
@@ -88,7 +155,7 @@ class Game {
 
     setupUI() {
         this.musicToggleBtn = document.getElementById('music-toggle-btn');
-        const storedPref = localStorage.getItem('af_music_enabled');
+        const storedPref = this.allowPersistence ? window.localStorage.getItem('af_music_enabled') : null;
         this.musicEnabled = storedPref === null ? true : storedPref === 'true';
         if (this.musicToggleBtn) {
             this.updateMusicToggleButton();
@@ -139,15 +206,19 @@ class Game {
                     // Check if this completes a mission
                     const obj = this.gameState.interactiveObjects.find(o => o.id === objectId);
                     if (obj) {
-                        this.missionManager.completeMission(obj.type, objectId);
+                        const missionCompleted = this.missionManager.completeMission(obj.type, objectId);
                         this.renderer.updateMissionPanel(this.missionManager);
+                        if (missionCompleted) {
+                            this.requestSave();
+                        }
                         
                         // Check win condition
                         if (this.missionManager.areAllMissionsComplete()) {
                             // Check if there are more levels
                             if (this.gameState.currentLevel < this.levelManager.getTotalLevels()) {
                                 setTimeout(() => {
-                                    this.loadLevel(this.gameState.currentLevel + 1, { preserveHealth: true });
+                                    this.loadLevel(this.gameState.currentLevel + 1);
+                                    this.requestSave();
                                 }, 1500);
                             } else {
                                 setTimeout(() => {
@@ -229,6 +300,16 @@ class Game {
         this.inputManager.onExplosion = () => this.audioManager.playExplosion();
     }
 
+    handleAutoSave(deltaTime) {
+        if (!this.allowPersistence) return;
+        this.saveAccumulator += deltaTime;
+        if (this.pendingSave || this.saveAccumulator >= 5) {
+            this.writeSave();
+            this.pendingSave = false;
+            this.saveAccumulator = 0;
+        }
+    }
+
     updateMusicToggleButton() {
         if (!this.musicToggleBtn) return;
         this.musicToggleBtn.textContent = this.musicEnabled ? 'Music: On' : 'Music: Off';
@@ -236,7 +317,9 @@ class Game {
 
     toggleMusic() {
         this.musicEnabled = !this.musicEnabled;
-        localStorage.setItem('af_music_enabled', this.musicEnabled ? 'true' : 'false');
+        if (this.allowPersistence) {
+            window.localStorage.setItem('af_music_enabled', this.musicEnabled ? 'true' : 'false');
+        }
         this.updateMusicToggleButton();
 
         if (this.musicEnabled) {
@@ -290,6 +373,7 @@ class Game {
         finalScore.textContent = this.gameState.score;
         winModal.classList.remove('hidden');
         this.gameState.won = true;
+        this.clearSave();
     }
 
     showGameOverScreen() {
@@ -315,8 +399,10 @@ class Game {
         document.getElementById('win-modal').classList.add('hidden');
         
         // Reset game state
+        this.clearSave();
         this.gameState.reset();
         this.loadLevel(1);
+        this.requestSave();
         
         // Restart game loop
         this.start();
@@ -364,13 +450,14 @@ class Game {
         this.gameState.updateEnemies(deltaTime);
         this.gameState.updateEnemyProjectiles(deltaTime);
         this.gameState.updateProjectiles(deltaTime);
-        this.gameState.updateTrapBombs(deltaTime);
+        this.gameState.updateTrapBombs(deltaTime, this.inputManager);
         this.gameState.updateMissionTimer(deltaTime);
         this.gameState.checkCollisions();
         this.gameState.checkCollectibles(this.inputManager);
 
         // Clear pressed keys at end of frame
         this.inputManager.clearPressedKeys();
+        this.handleAutoSave(deltaTime);
     }
 
     render() {

@@ -63,9 +63,10 @@ class GameState {
         this.timerExpired = false;
         this.gameOverReason = null;
         this.hasIntel = false;
+        this.stateChangeListener = null;
     }
 
-    loadLevel(levelData, options = {}) {
+    loadLevel(levelData) {
         // Load map first
         if (levelData.map) {
             this.mapSystem.loadMap(levelData.map);
@@ -87,9 +88,7 @@ class GameState {
         );
         this.player.x = validPos.x;
         this.player.y = validPos.y;
-        if (!options.preserveHealth) {
-            this.player.health = this.player.maxHealth;
-        }
+        this.player.health = this.player.maxHealth;
         this.player.invincible = false;
         this.player.invincibleTime = 0;
         // Reset hide for new level
@@ -260,6 +259,7 @@ class GameState {
                     // Remove enemy (or damage it)
                     this.enemies.splice(i, 1);
                     this.score += 50;
+                    this.notifyChange();
                     return false; // Remove projectile
                 }
             }
@@ -366,7 +366,9 @@ class GameState {
                     this.player.health = 0;
                     this.gameOver = true;
                     this.gameOverReason = this.gameOverReason || 'health';
+                    this.notifyChange();
                 }
+                this.notifyChange();
                 return false; // Remove projectile
             }
 
@@ -385,10 +387,11 @@ class GameState {
             this.timerExpired = true;
             this.gameOver = true;
             this.gameOverReason = 'timer';
+            this.notifyChange();
         }
     }
 
-    updateTrapBombs(deltaTime) {
+    updateTrapBombs(deltaTime, inputManager) {
         if (this.isPaused || this.gameOver || this.won) return;
 
         this.interactiveObjects.forEach(obj => {
@@ -421,7 +424,8 @@ class GameState {
 
                 this.gameOver = true;
                 this.gameOverReason = killedByBlast ? 'trap_bomb' : 'timer';
-                inputManager.onExplosion?.();
+                this.notifyChange();
+                inputManager?.onExplosion?.();
             }
         });
     }
@@ -456,6 +460,7 @@ class GameState {
                     this.player.health = Math.min(this.player.maxHealth, this.player.health + healAmount);
                     this.score += 5;
                 }
+                this.notifyChange();
                 inputManager.onItemPickup?.();
             }
         });
@@ -476,7 +481,9 @@ class GameState {
                         this.player.health = 0;
                         this.gameOver = true;
                         this.gameOverReason = this.gameOverReason || 'health';
+                        this.notifyChange();
                     }
+                    this.notifyChange();
                 }
             });
         }
@@ -509,6 +516,7 @@ class GameState {
                     door.unlocked = true;
                     this.unlockDoorInMap(door);
                     this.score += 25;
+                    this.notifyChange();
                     inputManager.onDoorSuccess?.();
                     return { type: "door_unlocked", door: door };
                 } else if (door.requires === "secret" && this.inventory.secrets > 0) {
@@ -516,6 +524,7 @@ class GameState {
                     door.unlocked = true;
                     this.unlockDoorInMap(door);
                     this.score += 50;
+                    this.notifyChange();
                     inputManager.onDoorSuccess?.();
                     return { type: "door_unlocked", door: door };
                 } else if (door.requires === "key" && this.inventory.keys === 0) {
@@ -597,6 +606,7 @@ class GameState {
         obj.exploded = false;
         obj.active = true; // We still want to render it, but it should no longer be interactable
         obj.explosionRadius = obj.explosionRadius || this.mapSystem.tileSize * 5;
+        this.notifyChange();
     }
 
     handleMathAnswer(correct, objectId) {
@@ -631,6 +641,7 @@ class GameState {
                 this.gameOverReason = this.gameOverReason || 'health';
             }
         }
+        this.notifyChange();
     }
 
     isColliding(rect1, rect2) {
@@ -638,6 +649,130 @@ class GameState {
                rect1.x + rect1.width > rect2.x &&
                rect1.y < rect2.y + rect2.height &&
                rect1.y + rect1.height > rect2.y;
+    }
+
+    setChangeListener(listener) {
+        this.stateChangeListener = listener;
+    }
+
+    notifyChange() {
+        if (typeof this.stateChangeListener === 'function') {
+            this.stateChangeListener();
+        }
+    }
+
+    getSaveData() {
+        return {
+            player: {
+                x: this.player.x,
+                y: this.player.y,
+                health: this.player.health,
+                hidden: this.player.hidden,
+                hideUsed: this.player.hideUsed,
+                hideTimeRemaining: this.player.hideTimeRemaining
+            },
+            inventory: { ...this.inventory },
+            score: this.score,
+            doors: this.doors.map(door => ({ id: door.id, unlocked: door.unlocked })),
+            interactiveObjects: this.interactiveObjects.map(obj => ({
+                id: obj.id,
+                type: obj.type,
+                active: obj.active,
+                solved: obj.solved,
+                collected: obj.collected,
+                wrongAttempts: obj.wrongAttempts,
+                trapActive: obj.trapActive,
+                trapTimer: obj.trapTimer,
+                exploded: obj.exploded,
+                grantedSecret: obj.grantedSecret
+            })),
+            collectibles: this.collectibles.map(collectible => ({ id: collectible.id, collected: collectible.collected })),
+            hasIntel: this.hasIntel,
+            levelTimer: this.levelTimer,
+            timerActive: this.timerActive,
+            timerExpired: this.timerExpired
+        };
+    }
+
+    applySaveData(data) {
+        if (!data) return;
+
+        if (data.player) {
+            this.player.x = data.player.x ?? this.player.x;
+            this.player.y = data.player.y ?? this.player.y;
+            if (typeof data.player.health === 'number') {
+                this.player.health = Math.max(0, Math.min(this.player.maxHealth, data.player.health));
+            }
+            this.player.hidden = !!data.player.hidden;
+            this.player.hideUsed = !!data.player.hideUsed;
+            this.player.hideTimeRemaining = data.player.hideTimeRemaining ?? this.player.hideTimeRemaining;
+        }
+
+        if (data.inventory) {
+            this.inventory = {
+                keys: data.inventory.keys ?? this.inventory.keys,
+                money: data.inventory.money ?? this.inventory.money,
+                secrets: data.inventory.secrets ?? this.inventory.secrets
+            };
+        }
+
+        if (typeof data.score === 'number') {
+            this.score = data.score;
+        }
+
+        if (Array.isArray(data.doors)) {
+            data.doors.forEach(savedDoor => {
+                const door = this.doors.find(d => d.id === savedDoor.id);
+                if (door) {
+                    door.unlocked = !!savedDoor.unlocked;
+                    if (door.unlocked) {
+                        this.unlockDoorInMap(door);
+                    }
+                }
+            });
+        }
+
+        if (Array.isArray(data.interactiveObjects)) {
+            data.interactiveObjects.forEach(savedObj => {
+                const obj = this.interactiveObjects.find(o => o.id === savedObj.id);
+                if (obj) {
+                    if (savedObj.type) obj.type = savedObj.type;
+                    if (typeof savedObj.active === 'boolean') obj.active = savedObj.active;
+                    if (typeof savedObj.solved === 'boolean') obj.solved = savedObj.solved;
+                    if (typeof savedObj.collected === 'boolean') obj.collected = savedObj.collected;
+                    if (typeof savedObj.wrongAttempts === 'number') obj.wrongAttempts = savedObj.wrongAttempts;
+                    if (typeof savedObj.trapActive === 'boolean') obj.trapActive = savedObj.trapActive;
+                    if (typeof savedObj.trapTimer === 'number') obj.trapTimer = savedObj.trapTimer;
+                    if (typeof savedObj.exploded === 'boolean') obj.exploded = savedObj.exploded;
+                    if (typeof savedObj.grantedSecret === 'boolean') obj.grantedSecret = savedObj.grantedSecret;
+                }
+            });
+        }
+
+        if (Array.isArray(data.collectibles)) {
+            data.collectibles.forEach(savedCollectible => {
+                const collectible = this.collectibles.find(c => c.id === savedCollectible.id);
+                if (collectible && typeof savedCollectible.collected === 'boolean') {
+                    collectible.collected = savedCollectible.collected;
+                }
+            });
+        }
+
+        if (typeof data.hasIntel === 'boolean') {
+            this.hasIntel = data.hasIntel;
+        }
+
+        if (typeof data.levelTimer === 'number') {
+            this.levelTimer = data.levelTimer;
+        }
+        if (typeof data.timerActive === 'boolean') {
+            this.timerActive = data.timerActive;
+        }
+        if (typeof data.timerExpired === 'boolean') {
+            this.timerExpired = data.timerExpired;
+        }
+
+        this.notifyChange();
     }
 
     reset() {

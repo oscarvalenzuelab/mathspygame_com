@@ -113,7 +113,23 @@ class MissionManager {
     getTotalCount() {
         return this.missions.length;
     }
+
+    getSaveData() {
+        return this.missions.map(mission => ({
+            id: mission.id,
+            completed: mission.completed
+        }));
+    }
+
+    loadFromData(savedMissions) {
+        if (!Array.isArray(savedMissions)) return;
+        savedMissions.forEach(saved => {
+            const mission = this.missions.find(m => m.id === saved.id);
+            if (mission) {
+                mission.completed = !!saved.completed;
+            }
+        });
+    }
 }
 
 export default MissionManager;
-
