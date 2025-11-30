@@ -358,7 +358,7 @@ class Game {
 
     updateAgentNameLabel() {
         if (this.agentNameLabel) {
-            const displayName = this.agentName ? `Agent ${this.agentName}` : 'Agent ???';
+            const displayName = this.agentName ? this.agentName : '???';
             this.agentNameLabel.textContent = displayName;
         }
     }
