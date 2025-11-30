@@ -1,5 +1,5 @@
 import { LEVEL_ITEM_CONFIG, LEVEL_SETTINGS } from './gameConfig.js';
-import { LEVEL_LAYOUTS } from './levelLayouts/index.js?v=20231130';
+import { LEVEL_LAYOUTS } from './levelLayouts/layoutLoader.js?v=20231130';
 
 const PLAYER_STARTS = [
     { x: 120, y: 240 },
