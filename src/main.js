@@ -191,6 +191,7 @@ class Game {
 
     setupUI() {
         this.musicToggleBtn = document.getElementById('music-toggle-btn');
+        this.musicToggleIcon = document.getElementById('music-toggle-icon');
         const storedPref = this.allowPersistence ? window.localStorage.getItem('af_music_enabled') : null;
         this.musicEnabled = storedPref === null ? true : storedPref === 'true';
         if (this.musicToggleBtn) {
@@ -439,7 +440,10 @@ class Game {
 
     updateMusicToggleButton() {
         if (!this.musicToggleBtn) return;
-        this.musicToggleBtn.textContent = this.musicEnabled ? 'Music: On' : 'Music: Off';
+        this.musicToggleBtn.classList.toggle('muted', !this.musicEnabled);
+        if (this.musicToggleIcon) {
+            this.musicToggleIcon.className = this.musicEnabled ? 'bi bi-volume-off' : 'bi bi-volume-off-fill';
+        }
     }
 
     toggleMusic() {
