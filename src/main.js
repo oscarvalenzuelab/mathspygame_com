@@ -32,6 +32,15 @@ class Game {
         this.isRunning = false;
         
         this.setupUI();
+        if (this.allowPersistence) {
+            window.addEventListener('beforeunload', () => this.writeSave(true));
+            window.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    this.writeSave(true);
+                }
+            });
+        }
+
         const restored = this.restoreProgress();
         if (!restored) {
             this.loadLevel(1);
@@ -70,6 +79,7 @@ class Game {
                 this.renderer.updateMissionPanel(this.missionManager);
             }
             this.requestSave();
+            this.writeSave(true);
             return true;
         } catch (error) {
             console.warn('Failed to restore save data', error);
@@ -85,6 +95,9 @@ class Game {
 
     writeSave(force = false) {
         if (!this.allowPersistence) return;
+        if (!force && !this.pendingSave && this.saveAccumulator < 5) {
+            return;
+        }
         try {
             const payload = {
                 version: 1,
@@ -94,6 +107,8 @@ class Game {
                 timestamp: Date.now()
             };
             window.localStorage.setItem('af_save', JSON.stringify(payload));
+            this.pendingSave = false;
+            this.saveAccumulator = 0;
         } catch (error) {
             console.warn('Failed to persist save data', error);
         }
