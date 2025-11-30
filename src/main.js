@@ -27,6 +27,8 @@ class Game {
         this.pendingSave = false;
         this.saveAccumulator = 0;
         this.currentMathDifficulty = 1;
+        this.agentName = '';
+        this.agentNameLabel = document.getElementById('agent-name-label');
         
         // Setup entity container after renderer is created
         this.renderer.setupEntityContainer();
@@ -35,6 +37,7 @@ class Game {
         this.isRunning = false;
         
         this.setupUI();
+        this.initializeAgentName();
         if (this.allowPersistence) {
             window.addEventListener('beforeunload', () => this.writeSave(true));
             window.addEventListener('visibilitychange', () => {
@@ -323,6 +326,70 @@ class Game {
         document.getElementById('restart-win-btn').addEventListener('click', () => {
             this.restart();
         });
+    }
+
+    initializeAgentName() {
+        this.agentModal = document.getElementById('agent-modal');
+        this.agentNameInput = document.getElementById('agent-name-input');
+        const saveBtn = document.getElementById('agent-save-btn');
+        const changeBtn = document.getElementById('agent-name-change-btn');
+        const storedName = this.allowPersistence ? window.localStorage.getItem('af_agent_name') : null;
+        this.agentName = storedName || '';
+        this.updateAgentNameLabel();
+
+        if (changeBtn) {
+            changeBtn.addEventListener('click', () => this.showAgentModal());
+        }
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => this.saveAgentName());
+        }
+        if (this.agentNameInput) {
+            this.agentNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.saveAgentName();
+                }
+            });
+        }
+
+        if (!this.agentName) {
+            this.showAgentModal();
+        }
+    }
+
+    updateAgentNameLabel() {
+        if (this.agentNameLabel) {
+            const displayName = this.agentName ? `Agent ${this.agentName}` : 'Agent ???';
+            this.agentNameLabel.textContent = displayName;
+        }
+    }
+
+    showAgentModal() {
+        if (!this.agentModal) return;
+        if (this.agentNameInput) {
+            this.agentNameInput.value = this.agentName || '';
+            this.agentNameInput.focus();
+            this.agentNameInput.select();
+        }
+        this.agentModal.classList.remove('hidden');
+    }
+
+    hideAgentModal() {
+        if (!this.agentModal) return;
+        this.agentModal.classList.add('hidden');
+    }
+
+    saveAgentName() {
+        if (!this.agentNameInput) return;
+        let value = this.agentNameInput.value.trim();
+        if (!value) {
+            value = '???';
+        }
+        this.agentName = value;
+        this.updateAgentNameLabel();
+        if (this.allowPersistence) {
+            window.localStorage.setItem('af_agent_name', value);
+        }
+        this.hideAgentModal();
     }
 
     setupAudioHooks() {

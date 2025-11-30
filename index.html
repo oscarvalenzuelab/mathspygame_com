@@ -17,6 +17,10 @@
         <div id="ui-sidebar">
             <div id="hud">
                 <div class="hud-item">
+                    <span class="hud-label">Agent:</span>
+                    <span id="agent-name-label">Agent ???</span>
+                </div>
+                <div class="hud-item">
                     <span class="hud-label">Health:</span>
                     <span id="health-value">100</span>
                 </div>
@@ -67,6 +71,7 @@
                 <div class="control-item">H: Hide (5s, once per level)</div>
                 <div class="control-item">Mouse: Shoot</div>
                 <div class="control-item">E / Space: Interact</div>
+                <button id="agent-name-change-btn" class="control-button">Change Agent Name</button>
                 <button id="music-toggle-btn" class="control-button">Music: On</button>
             </div>
         </div>
@@ -76,6 +81,16 @@
         <div class="warning-content">
             <h2>Device Not Supported</h2>
             <p>This training mission is designed for laptops or tablets. Please try again on a larger screen.</p>
+        </div>
+    </div>
+
+    <div id="agent-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Select Agent Name</h2>
+            <input type="text" id="agent-name-input" maxlength="16" placeholder="Your codename">
+            <div class="modal-buttons">
+                <button id="agent-save-btn">Save</button>
+            </div>
         </div>
     </div>
 
