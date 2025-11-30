@@ -33,9 +33,9 @@ class Game {
         this.setupAudioHooks();
     }
 
-    loadLevel(levelNumber) {
+    loadLevel(levelNumber, options = {}) {
         const levelData = this.levelManager.getLevel(levelNumber);
-        this.gameState.loadLevel(levelData);
+        this.gameState.loadLevel(levelData, options);
         this.gameState.currentLevel = levelNumber;
         this.missionManager.initializeLevel(levelNumber);
         this.renderer.updateMissionPanel(this.missionManager);
@@ -147,7 +147,7 @@ class Game {
                             // Check if there are more levels
                             if (this.gameState.currentLevel < this.levelManager.getTotalLevels()) {
                                 setTimeout(() => {
-                                    this.loadLevel(this.gameState.currentLevel + 1);
+                                    this.loadLevel(this.gameState.currentLevel + 1, { preserveHealth: true });
                                 }, 1500);
                             } else {
                                 setTimeout(() => {

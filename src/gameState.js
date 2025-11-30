@@ -65,7 +65,7 @@ class GameState {
         this.hasIntel = false;
     }
 
-    loadLevel(levelData) {
+    loadLevel(levelData, options = {}) {
         // Load map first
         if (levelData.map) {
             this.mapSystem.loadMap(levelData.map);
@@ -87,7 +87,9 @@ class GameState {
         );
         this.player.x = validPos.x;
         this.player.y = validPos.y;
-        this.player.health = 100;
+        if (!options.preserveHealth) {
+            this.player.health = this.player.maxHealth;
+        }
         this.player.invincible = false;
         this.player.invincibleTime = 0;
         // Reset hide for new level
