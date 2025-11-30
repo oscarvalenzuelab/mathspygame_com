@@ -186,6 +186,10 @@ body {
     padding: 10px;
 }
 
+.control-button.hidden {
+    display: none;
+}
+
 .control-button:hover {
     background: rgba(76, 175, 80, 0.3);
 }

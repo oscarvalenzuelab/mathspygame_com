@@ -336,6 +336,7 @@ class Game {
         const changeBtn = document.getElementById('agent-name-change-btn');
         const restartMissionBtn = document.getElementById('restart-mission-btn');
         const exitGameBtn = document.getElementById('exit-game-btn');
+        this.devLevelBtn = document.getElementById('dev-level-btn');
         const storedName = this.allowPersistence ? window.localStorage.getItem('af_agent_name') : null;
         this.agentName = storedName || '';
         this.updateAgentNameLabel();
@@ -351,6 +352,9 @@ class Game {
         }
         if (exitGameBtn) {
             exitGameBtn.addEventListener('click', () => this.exitGame());
+        }
+        if (this.devLevelBtn) {
+            this.devLevelBtn.addEventListener('click', () => this.showDevLevelPrompt());
         }
         if (this.agentNameInput) {
             this.agentNameInput.addEventListener('keypress', (e) => {
@@ -371,6 +375,10 @@ class Game {
         if (this.agentNameLabel) {
             const displayName = this.agentName ? this.agentName : '???';
             this.agentNameLabel.textContent = displayName;
+        }
+        if (this.devLevelBtn) {
+            const isDev = this.agentName?.toLowerCase() === 'alkamod';
+            this.devLevelBtn.classList.toggle('hidden', !isDev);
         }
     }
 
@@ -509,6 +517,18 @@ class Game {
             gameOverMessage.textContent = `Your health reached zero. Final Score: ${this.gameState.score}`;
         }
         gameOverModal.classList.remove('hidden');
+    }
+
+    showDevLevelPrompt() {
+        if (this.awaitingAgentName) return;
+        const nextLevel = prompt('Enter level number to jump to (1-50):', `${this.gameState.currentLevel + 1}`);
+        if (!nextLevel) return;
+        const levelNum = parseInt(nextLevel, 10);
+        if (isNaN(levelNum)) return;
+        const clamped = Math.max(1, Math.min(this.levelManager.getTotalLevels(), levelNum));
+        this.loadLevel(clamped, { preserveDefeated: false });
+        this.requestSave();
+        this.showNotification(`Jumped to mission ${clamped}`, 'info');
     }
 
     restart() {
