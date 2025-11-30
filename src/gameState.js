@@ -65,9 +65,10 @@ class GameState {
         this.hasIntel = false;
         this.stateChangeListener = null;
         this.defeatedEnemies = new Set();
+        this.spawnGraceTimer = 0;
     }
 
-    loadLevel(levelData) {
+    loadLevel(levelData, options = {}) {
         // Load map first
         if (levelData.map) {
             this.mapSystem.loadMap(levelData.map);
@@ -107,8 +108,14 @@ class GameState {
             );
             return { ...enemy, x: validEnemyPos.x, y: validEnemyPos.y };
         });
-        // Reset defeated enemy tracking for fresh level loads
-        this.defeatedEnemies = new Set();
+        // Reset defeated enemy tracking for fresh level loads unless preserving
+        if (!options.preserveDefeated) {
+            this.defeatedEnemies = new Set();
+        }
+        if (options.preserveDefeated && this.defeatedEnemies && this.defeatedEnemies.size > 0) {
+            this.enemies = this.enemies.filter(enemy => !this.defeatedEnemies.has(enemy.id));
+        }
+        this.spawnGraceTimer = 3;
 
         // Load interactive objects
         this.interactiveObjects = levelData.interactiveObjects.map(obj => {
@@ -306,7 +313,7 @@ class GameState {
             }
 
             // Check if enemy can see player (and player is not hidden)
-            if (!this.player.hidden) {
+            if (!this.player.hidden && this.spawnGraceTimer <= 0) {
                 const enemyCenterX = enemy.x + enemy.width / 2;
                 const enemyCenterY = enemy.y + enemy.height / 2;
                 const playerCenterX = this.player.x + this.player.width / 2;
@@ -363,7 +370,7 @@ class GameState {
             }
 
             // Check collision with player
-            if (this.isColliding(projectile, this.player) && !this.player.invincible) {
+            if (this.spawnGraceTimer <= 0 && this.isColliding(projectile, this.player) && !this.player.invincible) {
                 this.player.health -= 15;
                 this.player.invincible = true;
                 this.player.invincibleTime = 1.0;
@@ -394,6 +401,12 @@ class GameState {
             this.gameOver = true;
             this.gameOverReason = 'timer';
             this.notifyChange();
+        }
+    }
+
+    updateSpawnGrace(deltaTime) {
+        if (this.spawnGraceTimer > 0) {
+            this.spawnGraceTimer = Math.max(0, this.spawnGraceTimer - deltaTime);
         }
     }
 
@@ -697,7 +710,8 @@ class GameState {
             hasIntel: this.hasIntel,
             levelTimer: this.levelTimer,
             timerActive: this.timerActive,
-            timerExpired: this.timerExpired
+            timerExpired: this.timerExpired,
+            spawnGraceTimer: this.spawnGraceTimer
         };
     }
 
@@ -787,6 +801,9 @@ class GameState {
         if (typeof data.timerExpired === 'boolean') {
             this.timerExpired = data.timerExpired;
         }
+        if (typeof data.spawnGraceTimer === 'number') {
+            this.spawnGraceTimer = Math.max(0, data.spawnGraceTimer);
+        }
 
         this.notifyChange();
     }
@@ -837,6 +854,7 @@ class GameState {
         this.gameOverReason = null;
         this.hasIntel = false;
         this.defeatedEnemies = new Set();
+        this.spawnGraceTimer = 0;
     }
 }
 

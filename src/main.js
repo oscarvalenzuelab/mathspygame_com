@@ -51,9 +51,9 @@ class Game {
         this.setupAudioHooks();
     }
 
-    loadLevel(levelNumber) {
+    loadLevel(levelNumber, options = {}) {
         const levelData = this.levelManager.getLevel(levelNumber);
-        this.gameState.loadLevel(levelData);
+        this.gameState.loadLevel(levelData, options);
         this.gameState.currentLevel = levelNumber;
         this.missionManager.initializeLevel(levelNumber);
         this.renderer.updateMissionPanel(this.missionManager);
@@ -70,7 +70,10 @@ class Game {
             const data = JSON.parse(raw);
             const totalLevels = this.levelManager.getTotalLevels();
             const targetLevel = Math.max(1, Math.min(totalLevels, data.currentLevel || 1));
-            this.loadLevel(targetLevel);
+            if (Array.isArray(data.gameState?.defeatedEnemyIds)) {
+                this.gameState.defeatedEnemies = new Set(data.gameState.defeatedEnemyIds);
+            }
+            this.loadLevel(targetLevel, { preserveDefeated: true });
             if (data.gameState) {
                 this.gameState.applySaveData(data.gameState);
             }
@@ -464,6 +467,7 @@ class Game {
         // Update game state
         const movementVector = this.inputManager.getMovementVector();
         this.gameState.updatePlayer(deltaTime, movementVector, this.inputManager);
+        this.gameState.updateSpawnGrace(deltaTime);
         this.gameState.updateEnemies(deltaTime);
         this.gameState.updateEnemyProjectiles(deltaTime);
         this.gameState.updateProjectiles(deltaTime);
