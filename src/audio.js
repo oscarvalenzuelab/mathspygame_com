@@ -299,6 +299,21 @@ class AudioManager {
         osc.start();
         osc.stop(this.audioCtx.currentTime + 0.27);
     }
+
+    playEnemyHit() {
+        if (!this.canPlaySfx()) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(500, this.audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(300, this.audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.2);
+    }
 }
 
 export default AudioManager;

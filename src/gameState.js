@@ -273,6 +273,7 @@ class GameState {
                     }
                     this.score += 50;
                     this.notifyChange();
+                    inputManager?.onEnemyHit?.();
                     return false; // Remove projectile
                 }
             }

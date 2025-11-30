@@ -399,6 +399,7 @@ class Game {
         this.inputManager.onDoorSuccess = () => this.audioManager.playDoorSuccess();
         this.inputManager.onDoorBlocked = () => this.audioManager.playDoorBlocked();
         this.inputManager.onExplosion = () => this.audioManager.playExplosion();
+        this.inputManager.onEnemyHit = () => this.audioManager.playEnemyHit();
     }
 
     handleAutoSave(deltaTime) {
