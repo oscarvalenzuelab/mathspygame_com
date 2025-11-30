@@ -5,86 +5,43 @@ class MissionManager {
         this.currentLevel = 1;
     }
 
-    initializeLevel(level) {
+    initializeLevel(level, levelData) {
         this.currentLevel = level;
-        this.missions = this.getMissionsForLevel(level);
+        this.missions = this.buildMissions(levelData);
     }
 
-    getMissionsForLevel(level) {
-        // Define missions for each level
-        const levelMissions = {
-            1: [
-                {
-                    id: "disarm-main-bomb",
-                    description: "Disarm the main bomb",
-                    targetType: "bomb",
-                    targetId: "bomb-1",
-                    completed: false
-                },
-                {
-                    id: "steal-intel",
-                    description: "Collect the secret intel briefcase",
-                    targetType: "loot",
-                    targetId: "intel-1",
-                    completed: false
-                }
-            ],
-            2: [
-                {
-                    id: "disarm-bomb-1",
-                    description: "Disarm the first bomb",
-                    targetType: "bomb",
-                    targetId: "bomb-1",
-                    completed: false
-                },
-                {
-                    id: "disarm-bomb-2",
-                    description: "Disarm the second bomb",
-                    targetType: "bomb",
-                    targetId: "bomb-2",
-                    completed: false
-                },
-                {
-                    id: "steal-intel",
-                    description: "Collect the secret intel",
-                    targetType: "loot",
-                    targetId: "intel-1",
-                    completed: false
-                }
-            ],
-            3: [
-                {
-                    id: "disarm-bomb-1",
-                    description: "Disarm bomb #1",
-                    targetType: "bomb",
-                    targetId: "bomb-1",
-                    completed: false
-                },
-                {
-                    id: "disarm-bomb-2",
-                    description: "Disarm bomb #2",
-                    targetType: "bomb",
-                    targetId: "bomb-2",
-                    completed: false
-                },
-                {
-                    id: "disarm-bomb-3",
-                    description: "Disarm bomb #3",
-                    targetType: "bomb",
-                    targetId: "bomb-3",
-                    completed: false
-                },
-                {
-                    id: "steal-intel",
-                    description: "Collect the final intel",
-                    targetType: "loot",
-                    targetId: "intel-1",
-                    completed: false
-                }
-            ]
-        };
+    buildMissions(levelData) {
+        if (!levelData) return [];
+        const missions = [];
+        const bombs = levelData.interactiveObjects.filter(obj => obj.type === 'bomb');
+        bombs.forEach((bomb, index) => {
+            missions.push({
+                id: `disarm-${bomb.id}`,
+                description: `Disarm bomb #${index + 1}`,
+                targetType: 'bomb',
+                targetId: bomb.id,
+                completed: false
+            });
+        });
 
-        return levelMissions[level] || levelMissions[1];
+        const intelTargets = levelData.interactiveObjects.filter(obj => obj.type === 'loot');
+        intelTargets.forEach((loot, index) => {
+            missions.push({
+                id: `intel-${loot.id}`,
+                description: intelTargets.length === 1 ? 'Collect the intel briefcase' : `Collect intel briefcase #${index + 1}`,
+                targetType: 'loot',
+                targetId: loot.id,
+                completed: false
+            });
+        });
+
+        return missions.length ? missions : [{
+            id: 'explore-base',
+            description: 'Explore the facility',
+            targetType: 'none',
+            targetId: 'none',
+            completed: false
+        }];
     }
 
     completeMission(targetType, targetId) {

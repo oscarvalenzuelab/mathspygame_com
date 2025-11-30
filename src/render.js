@@ -1,3 +1,5 @@
+import { ICON_CONFIG } from './gameConfig.js';
+
 // Rendering system for canvas with Bootstrap Icons
 class Renderer {
     constructor(canvas) {
@@ -165,7 +167,7 @@ class Renderer {
         const centerX = door.x + door.width / 2;
         const centerY = door.y + door.height / 2;
         const size = 36;
-        this.createOrUpdateEntity(`door-${door.id}`, 'bi-lock-fill', centerX, centerY, size, '#ffd700');
+        this.createOrUpdateEntity(`door-${door.id}`, ICON_CONFIG.door, centerX, centerY, size, '#ffd700');
     }
 
     drawPlayer(player) {
@@ -179,7 +181,7 @@ class Renderer {
         } else {
             // Draw visible player
             const color = player.invincible && Math.floor(Date.now() / 100) % 2 === 0 ? '#ff6b6b' : '#4a90e2';
-            this.createOrUpdateEntity('player', 'bi-person-fill', centerX, centerY, size, color);
+            this.createOrUpdateEntity('player', ICON_CONFIG.player, centerX, centerY, size, color);
         }
     }
 
@@ -187,7 +189,7 @@ class Renderer {
         const centerX = enemy.x + enemy.width / 2;
         const centerY = enemy.y + enemy.height / 2;
         const size = 28;
-        this.createOrUpdateEntity(`enemy-${enemy.id}`, 'bi-shield-fill-x', centerX, centerY, size, '#e74c3c');
+        this.createOrUpdateEntity(`enemy-${enemy.id}`, ICON_CONFIG.enemy, centerX, centerY, size, '#e74c3c');
     }
 
     drawInteractiveObject(obj) {
@@ -200,14 +202,14 @@ class Renderer {
         if (obj.type === "bomb") {
             const color = obj.solved ? '#777' : '#ff4d4d';
             const iconSize = obj.solved ? size : size + Math.sin(Date.now() / 200) * 4;
-            this.createOrUpdateEntity(`obj-${obj.id}`, 'bi-radioactive', centerX, centerY, iconSize, color);
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.bomb, centerX, centerY, iconSize, color);
         } else if (obj.type === "loot") {
             if (obj.collected) {
                 this.removeEntity(`obj-${obj.id}`);
                 return; // Don't draw collected items
             }
             // Intel briefcase (gold)
-            this.createOrUpdateEntity(`obj-${obj.id}`, 'bi-briefcase-fill', centerX, centerY, size, '#f39c12');
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.loot, centerX, centerY, size, '#f39c12');
         } else if (obj.type === "trap_bomb") {
             if (obj.exploded) {
                 this.removeEntity(`obj-${obj.id}`);
@@ -219,7 +221,7 @@ class Renderer {
             const bombSize = (size + 12) * pulse;
             this.drawExplosionRadiusIndicator(centerX, centerY, obj.explosionRadius);
             this.drawPulseWarning(centerX, centerY, bombSize, pulse);
-            this.createOrUpdateEntity(`obj-${obj.id}`, 'bi-radioactive', centerX, centerY, bombSize, '#ff5252');
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.bomb, centerX, centerY, bombSize, '#ff5252');
 
             // Draw countdown text above the trap bomb
             this.ctx.fillStyle = '#ffffff';
@@ -270,13 +272,13 @@ class Renderer {
         const size = 24;
 
         if (collectible.type === "key") {
-            this.createOrUpdateEntity(`collectible-${collectible.id}`, 'bi-key-fill', centerX, centerY, size, '#ffd700');
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.key, centerX, centerY, size, '#ffd700');
         } else if (collectible.type === "money") {
-            this.createOrUpdateEntity(`collectible-${collectible.id}`, 'bi-cash-coin', centerX, centerY, size, '#4CAF50');
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.money, centerX, centerY, size, '#4CAF50');
         } else if (collectible.type === "secret") {
-            this.createOrUpdateEntity(`collectible-${collectible.id}`, 'bi-file-earmark-lock-fill', centerX, centerY, size, '#9c27b0');
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.secret, centerX, centerY, size, '#9c27b0');
         } else if (collectible.type === "health") {
-            this.createOrUpdateEntity(`collectible-${collectible.id}`, 'bi-heart-pulse-fill', centerX, centerY, size, '#ff5252');
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.health, centerX, centerY, size, '#ff5252');
         }
     }
 
@@ -423,6 +425,7 @@ class Renderer {
                 );
                 if (distance < 50 && !gameState.player.hidden) {
                     this.drawInteractionHint(obj.x + obj.width/2, obj.y);
+                    this.drawInteractiveInfo(obj, obj.x + obj.width/2, obj.y - 12);
                 }
             }
         });
@@ -446,12 +449,12 @@ class Renderer {
 
         // Draw projectiles (player)
         gameState.projectiles.forEach((projectile, index) => {
-            this.createOrUpdateEntity(`proj-${index}`, 'bi-circle-fill', projectile.x, projectile.y, 12, '#ffeb3b');
+            this.createOrUpdateEntity(`proj-${index}`, ICON_CONFIG.projectile, projectile.x, projectile.y, 12, '#ffeb3b');
         });
 
         // Draw enemy projectiles
         gameState.enemyProjectiles.forEach((projectile, index) => {
-            this.createOrUpdateEntity(`enemy-proj-${index}`, 'bi-circle-fill', projectile.x, projectile.y, 12, '#ff4444');
+            this.createOrUpdateEntity(`enemy-proj-${index}`, ICON_CONFIG.projectile, projectile.x, projectile.y, 12, '#ff4444');
         });
 
         // Draw player

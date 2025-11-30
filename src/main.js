@@ -26,6 +26,7 @@ class Game {
         this.allowPersistence = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
         this.pendingSave = false;
         this.saveAccumulator = 0;
+        this.currentMathDifficulty = 1;
         
         // Setup entity container after renderer is created
         this.renderer.setupEntityContainer();
@@ -65,9 +66,10 @@ class Game {
 
     loadLevel(levelNumber, options = {}) {
         const levelData = this.levelManager.getLevel(levelNumber);
+        this.currentMathDifficulty = levelData.mathDifficulty || 1;
         this.gameState.loadLevel(levelData, options);
         this.gameState.currentLevel = levelNumber;
-        this.missionManager.initializeLevel(levelNumber);
+        this.missionManager.initializeLevel(levelNumber, levelData);
         this.renderer.updateMissionPanel(this.missionManager);
     }
 
@@ -469,7 +471,7 @@ class Game {
                 } else if (interactionObj.id) {
                     // Regular interactive object (bomb, intel) - show math question
                     this.gameState.isPaused = true;
-                    const question = this.mathEngine.generateQuestion(1);
+                    const question = this.mathEngine.generateQuestion(this.currentMathDifficulty || 1);
                     this.gameState.currentMathQuestion = question;
                     this.showMathQuestion(question, interactionObj.id);
                 }
