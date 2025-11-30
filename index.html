@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Agent Math Game</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app-layout">
+        <div id="game-container">
+            <canvas id="game-canvas"></canvas>
+            <div id="notification-container"></div>
+        </div>
+
+        <div id="ui-sidebar">
+            <div id="hud">
+                <div class="hud-item">
+                    <span class="hud-label">Health:</span>
+                    <span id="health-value">100</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Score:</span>
+                    <span id="score-value">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Missions:</span>
+                    <span id="missions-value">0/0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Level:</span>
+                    <span id="level-value">1</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Timer:</span>
+                    <span id="timer-value">2:00</span>
+                </div>
+            </div>
+
+            <div id="mission-panel">
+                <h3>Current Missions</h3>
+                <ul id="mission-list"></ul>
+            </div>
+
+            <div id="inventory-panel">
+                <h3>Inventory</h3>
+                <div id="inventory-items">
+                    <div class="inventory-item">
+                        <i class="bi bi-key"></i>
+                        <span id="keys-count">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <i class="bi bi-cash-coin"></i>
+                        <span id="money-count">0</span>
+                    </div>
+                    <div class="inventory-item">
+                        <i class="bi bi-file-earmark-lock"></i>
+                        <span id="secrets-count">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="controls-panel">
+                <h3>Controls</h3>
+                <div class="control-item">WASD / Arrows: Move</div>
+                <div class="control-item">H: Hide (5s, once per level)</div>
+                <div class="control-item">Mouse: Shoot</div>
+                <div class="control-item">E / Space: Interact</div>
+                <button id="music-toggle-btn" class="control-button">Music: On</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="math-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="math-question-text">7 + 5 = ?</h2>
+            <input type="number" id="math-answer-input" placeholder="Enter answer">
+            <div class="modal-buttons">
+                <button id="math-submit-btn">Submit</button>
+                <button id="math-cancel-btn">Cancel</button>
+            </div>
+            <div id="math-feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="game-over-title">Mission Failed</h2>
+            <p id="game-over-message"></p>
+            <button id="restart-btn">Restart</button>
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Mission Complete!</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button id="restart-win-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
