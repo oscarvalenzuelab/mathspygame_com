@@ -578,7 +578,7 @@ class Game {
         this.gameState.updateSpawnGrace(deltaTime);
         this.gameState.updateEnemies(deltaTime);
         this.gameState.updateEnemyProjectiles(deltaTime);
-        this.gameState.updateProjectiles(deltaTime);
+        this.gameState.updateProjectiles(deltaTime, this.inputManager);
         this.gameState.updateTrapBombs(deltaTime, this.inputManager);
         this.gameState.updateMissionTimer(deltaTime);
         this.gameState.checkCollisions();
