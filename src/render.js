@@ -288,6 +288,40 @@ class Renderer {
         this.ctx.fillText('Press E or Space', x, y - 10);
     }
 
+    drawCollectibleInfo(collectible, x, y) {
+        const info = this.getCollectibleDescription(collectible);
+        if (!info) return;
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        this.ctx.strokeStyle = '#4CAF50';
+        this.ctx.lineWidth = 1;
+        this.ctx.font = '11px Arial';
+        this.ctx.textAlign = 'center';
+        const padding = 6;
+        const width = Math.max(120, this.ctx.measureText(info).width + padding * 2);
+        const height = 28;
+        this.ctx.fillRect(x - width/2, y - height, width, height);
+        this.ctx.strokeRect(x - width/2, y - height, width, height);
+        this.ctx.fillStyle = '#fff';
+        this.ctx.fillText(info, x, y - height/2 + 4);
+        this.ctx.restore();
+    }
+
+    getCollectibleDescription(collectible) {
+        switch (collectible.type) {
+            case 'key':
+                return 'Key: unlocks locked doors';
+            case 'money':
+                return 'Cash: bonus points';
+            case 'secret':
+                return 'Code: needed for secret doors';
+            case 'health':
+                return 'Medkit: restore 10% health';
+            default:
+                return null;
+        }
+    }
+
     drawDoorRequirementHint(door, x, y) {
         const requirementText = door.requires === 'secret' ? 'Requires CODE' : 'Requires KEY';
         this.ctx.save();
@@ -361,6 +395,18 @@ class Renderer {
                 if (distance < 50 && !gameState.player.hidden) {
                     this.drawInteractionHint(obj.x + obj.width/2, obj.y);
                 }
+            }
+        });
+
+        // Highlight collectible descriptions when nearby
+        gameState.collectibles.forEach(collectible => {
+            if (collectible.collected) return;
+            const distance = Math.sqrt(
+                Math.pow(gameState.player.x + gameState.player.width/2 - (collectible.x + collectible.width/2), 2) +
+                Math.pow(gameState.player.y + gameState.player.height/2 - (collectible.y + collectible.height/2), 2)
+            );
+            if (distance < 50 && !gameState.player.hidden) {
+                this.drawCollectibleInfo(collectible, collectible.x + collectible.width/2, collectible.y - 10);
             }
         });
 
