@@ -27,6 +27,7 @@ class Game {
         this.pendingSave = false;
         this.saveAccumulator = 0;
         this.currentMathDifficulty = 1;
+        this.awaitingAgentName = false;
         this.agentName = '';
         this.agentNameLabel = document.getElementById('agent-name-label');
         
@@ -360,6 +361,8 @@ class Game {
         }
 
         if (!this.agentName) {
+            this.awaitingAgentName = true;
+            this.gameState.isPaused = true;
             this.showAgentModal();
         }
     }
@@ -375,9 +378,13 @@ class Game {
         if (!this.agentModal) return;
         if (this.agentNameInput) {
             this.agentNameInput.value = this.agentName || '';
-            this.agentNameInput.focus();
-            this.agentNameInput.select();
+            setTimeout(() => {
+                this.agentNameInput.focus();
+                this.agentNameInput.select();
+            }, 50);
         }
+        this.awaitingAgentName = true;
+        this.gameState.isPaused = true;
         this.agentModal.classList.remove('hidden');
     }
 
@@ -397,6 +404,8 @@ class Game {
         if (this.allowPersistence) {
             window.localStorage.setItem('af_agent_name', value);
         }
+        this.awaitingAgentName = false;
+        this.gameState.isPaused = false;
         this.hideAgentModal();
     }
 
@@ -547,6 +556,10 @@ class Game {
 
         if (this.gameState.won) {
             return; // Game won, waiting for restart
+        }
+
+        if (this.awaitingAgentName) {
+            return;
         }
 
         // Check for interactions (must be before clearing pressed keys)
