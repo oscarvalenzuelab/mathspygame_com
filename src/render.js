@@ -198,10 +198,9 @@ class Renderer {
         const size = 30;
 
         if (obj.type === "bomb") {
-            this.removeEntity(`obj-${obj.id}`);
-            const pulse = obj.solved ? 0 : (Math.sin(Date.now() / 200) * 0.2 + 0.8);
             const color = obj.solved ? '#777' : '#ff4d4d';
-            this.drawBombSprite(centerX, centerY, size, color, pulse);
+            const iconSize = obj.solved ? size : size + Math.sin(Date.now() / 200) * 4;
+            this.createOrUpdateEntity(`obj-${obj.id}`, 'bi-radioactive', centerX, centerY, iconSize, color);
         } else if (obj.type === "loot") {
             if (obj.collected) {
                 this.removeEntity(`obj-${obj.id}`);
@@ -217,10 +216,10 @@ class Renderer {
 
             this.removeEntity(`obj-${obj.id}`);
             const pulse = Math.sin(Date.now() / 150) * 0.2 + 0.8;
-            const bombSize = size + 10;
+            const bombSize = (size + 12) * pulse;
             this.drawExplosionRadiusIndicator(centerX, centerY, obj.explosionRadius);
-            this.drawBombSprite(centerX, centerY, bombSize, '#ff5252', pulse);
             this.drawPulseWarning(centerX, centerY, bombSize, pulse);
+            this.createOrUpdateEntity(`obj-${obj.id}`, 'bi-radioactive', centerX, centerY, bombSize, '#ff5252');
 
             // Draw countdown text above the trap bomb
             this.ctx.fillStyle = '#ffffff';
@@ -232,32 +231,6 @@ class Renderer {
             const timerText = obj.trapActive ? `${minutes}:${seconds.toString().padStart(2, '0')}` : '0:00';
             this.ctx.fillText(timerText, centerX, centerY - obj.height);
         }
-    }
-
-    drawBombSprite(centerX, centerY, size, color, pulse = 1) {
-        const radius = size / 2 * pulse;
-
-        this.ctx.save();
-        this.ctx.beginPath();
-        const gradient = this.ctx.createRadialGradient(centerX - radius * 0.3, centerY - radius * 0.3, radius * 0.2, centerX, centerY, radius);
-        gradient.addColorStop(0, '#ffffff');
-        gradient.addColorStop(1, color);
-        this.ctx.fillStyle = gradient;
-        this.ctx.strokeStyle = '#1a1a1a';
-        this.ctx.lineWidth = 2;
-        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.stroke();
-
-        // fuse
-        this.ctx.strokeStyle = '#ffeb3b';
-        this.ctx.lineWidth = 3;
-        this.ctx.beginPath();
-        this.ctx.moveTo(centerX + radius * 0.4, centerY - radius * 0.6);
-        this.ctx.quadraticCurveTo(centerX + radius, centerY - radius, centerX + radius * 1.2, centerY - radius * 1.4);
-        this.ctx.stroke();
-
-        this.ctx.restore();
     }
 
     drawExplosionRadiusIndicator(centerX, centerY, radius) {
