@@ -29,6 +29,10 @@ const BOMB_SPAWNS = [
     { x: 880, y: 320 }
 ];
 
+const BOMB_OVERRIDES = {
+    2: [{ x: 520, y: 600 }]
+};
+
 const LOOT_SPAWNS = [
     { x: 840, y: 520 },
     { x: 700, y: 120 },
@@ -158,8 +162,9 @@ class LevelManager {
     generateBombs(spec) {
         const bombs = [];
         const count = Math.min(spec.bombs, BOMB_SPAWNS.length);
+        const overrides = BOMB_OVERRIDES[spec.level] || [];
         for (let i = 0; i < count; i++) {
-            const spawn = BOMB_SPAWNS[i];
+            const spawn = overrides[i] || BOMB_SPAWNS[i % BOMB_SPAWNS.length];
             bombs.push({
                 id: `bomb-${spec.level}-${i + 1}`,
                 type: 'bomb',
