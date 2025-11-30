@@ -241,7 +241,7 @@ class GameState {
         }
     }
 
-    updateProjectiles(deltaTime, inputManager) {
+    updateProjectiles(deltaTime, inputManager = null) {
         if (this.isPaused || this.gameOver || this.won) return;
 
         this.projectiles = this.projectiles.filter(projectile => {
