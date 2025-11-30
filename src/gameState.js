@@ -687,6 +687,12 @@ class GameState {
                 grantedSecret: obj.grantedSecret
             })),
             collectibles: this.collectibles.map(collectible => ({ id: collectible.id, collected: collectible.collected })),
+            enemies: this.enemies.map(enemy => ({
+                id: enemy.id,
+                x: enemy.x,
+                y: enemy.y,
+                direction: enemy.direction
+            })),
             hasIntel: this.hasIntel,
             levelTimer: this.levelTimer,
             timerActive: this.timerActive,
@@ -754,6 +760,19 @@ class GameState {
                 const collectible = this.collectibles.find(c => c.id === savedCollectible.id);
                 if (collectible && typeof savedCollectible.collected === 'boolean') {
                     collectible.collected = savedCollectible.collected;
+                }
+            });
+        }
+
+        if (Array.isArray(data.enemies)) {
+            const allowedIds = new Set(data.enemies.map(e => e.id));
+            this.enemies = this.enemies.filter(enemy => allowedIds.has(enemy.id));
+            data.enemies.forEach(savedEnemy => {
+                const enemy = this.enemies.find(e => e.id === savedEnemy.id);
+                if (enemy) {
+                    if (typeof savedEnemy.x === 'number') enemy.x = savedEnemy.x;
+                    if (typeof savedEnemy.y === 'number') enemy.y = savedEnemy.y;
+                    if (typeof savedEnemy.direction === 'number') enemy.direction = savedEnemy.direction;
                 }
             });
         }
