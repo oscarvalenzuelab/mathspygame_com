@@ -64,6 +64,7 @@ class GameState {
         this.gameOverReason = null;
         this.hasIntel = false;
         this.stateChangeListener = null;
+        this.defeatedEnemies = new Set();
     }
 
     loadLevel(levelData) {
@@ -106,6 +107,8 @@ class GameState {
             );
             return { ...enemy, x: validEnemyPos.x, y: validEnemyPos.y };
         });
+        // Reset defeated enemy tracking for fresh level loads
+        this.defeatedEnemies = new Set();
 
         // Load interactive objects
         this.interactiveObjects = levelData.interactiveObjects.map(obj => {
@@ -257,7 +260,10 @@ class GameState {
                 const enemy = this.enemies[i];
                 if (this.isColliding(projectile, enemy)) {
                     // Remove enemy (or damage it)
-                    this.enemies.splice(i, 1);
+                    const [removedEnemy] = this.enemies.splice(i, 1);
+                    if (removedEnemy?.id) {
+                        this.defeatedEnemies.add(removedEnemy.id);
+                    }
                     this.score += 50;
                     this.notifyChange();
                     return false; // Remove projectile
@@ -687,12 +693,7 @@ class GameState {
                 grantedSecret: obj.grantedSecret
             })),
             collectibles: this.collectibles.map(collectible => ({ id: collectible.id, collected: collectible.collected })),
-            enemies: this.enemies.map(enemy => ({
-                id: enemy.id,
-                x: enemy.x,
-                y: enemy.y,
-                direction: enemy.direction
-            })),
+            defeatedEnemyIds: Array.from(this.defeatedEnemies),
             hasIntel: this.hasIntel,
             levelTimer: this.levelTimer,
             timerActive: this.timerActive,
@@ -764,17 +765,13 @@ class GameState {
             });
         }
 
-        if (Array.isArray(data.enemies)) {
-            const allowedIds = new Set(data.enemies.map(e => e.id));
-            this.enemies = this.enemies.filter(enemy => allowedIds.has(enemy.id));
-            data.enemies.forEach(savedEnemy => {
-                const enemy = this.enemies.find(e => e.id === savedEnemy.id);
-                if (enemy) {
-                    if (typeof savedEnemy.x === 'number') enemy.x = savedEnemy.x;
-                    if (typeof savedEnemy.y === 'number') enemy.y = savedEnemy.y;
-                    if (typeof savedEnemy.direction === 'number') enemy.direction = savedEnemy.direction;
-                }
-            });
+        if (Array.isArray(data.defeatedEnemyIds)) {
+            this.defeatedEnemies = new Set(data.defeatedEnemyIds);
+            if (this.defeatedEnemies.size > 0) {
+                this.enemies = this.enemies.filter(enemy => !this.defeatedEnemies.has(enemy.id));
+            }
+        } else {
+            this.defeatedEnemies = new Set();
         }
 
         if (typeof data.hasIntel === 'boolean') {
@@ -839,6 +836,7 @@ class GameState {
         this.timerExpired = false;
         this.gameOverReason = null;
         this.hasIntel = false;
+        this.defeatedEnemies = new Set();
     }
 }
 
