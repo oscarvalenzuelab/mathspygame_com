@@ -217,6 +217,7 @@ class Game {
                     mathFeedback.textContent = 'Correct!';
                     mathFeedback.className = 'feedback correct';
                     this.gameState.handleMathAnswer(true, objectId);
+                    this.audioManager.playSuccessChime();
                     
                     // Check if this completes a mission
                     const obj = this.gameState.interactiveObjects.find(o => o.id === objectId);
@@ -257,6 +258,7 @@ class Game {
                     mathFeedback.textContent = 'Wrong! Try again.';
                     mathFeedback.className = 'feedback wrong';
                     this.gameState.handleMathAnswer(false, objectId);
+                    this.audioManager.playErrorTone();
                     
                     // Clear input for retry
                     setTimeout(() => {

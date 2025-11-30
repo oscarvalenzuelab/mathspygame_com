@@ -269,6 +269,36 @@ class AudioManager {
         noise.start();
         noise.stop(this.audioCtx.currentTime + 0.5);
     }
+
+    playSuccessChime() {
+        if (!this.canPlaySfx()) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(660, this.audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(880, this.audioCtx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.18, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.32);
+    }
+
+    playErrorTone() {
+        if (!this.canPlaySfx()) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, this.audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(150, this.audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.22, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.25);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.27);
+    }
 }
 
 export default AudioManager;
