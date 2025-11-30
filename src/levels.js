@@ -75,6 +75,10 @@ const DOOR_SPOTS = [
     { x: 240, y: 520, requires: 'secret' }
 ];
 
+const DOOR_OVERRIDES = {
+    2: [{ x: 360, y: 560, requires: 'key' }]
+};
+
 class LevelManager {
     constructor() {
         this.levels = this.generateLevels();
@@ -241,6 +245,19 @@ class LevelManager {
                     unlocked: false
                 });
             }
+        });
+
+        const overrides = DOOR_OVERRIDES[spec.level] || [];
+        overrides.forEach((door, idx) => {
+            doors.push({
+                id: `door-${spec.level}-override-${idx + 1}`,
+                x: door.x,
+                y: door.y,
+                width: 40,
+                height: 40,
+                requires: door.requires,
+                unlocked: false
+            });
         });
         return doors;
     }
