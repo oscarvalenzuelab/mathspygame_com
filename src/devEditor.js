@@ -648,6 +648,7 @@ class DevEditor {
         this.levelBlueprint = rebuiltLevel;
         this.game.loadLevel(this.currentLevel, { preserveDefeated: false });
         this.game.gameState.isPaused = true;
+        this.game.inputManager?.resetInputs?.();
         this.tiles = this.game.gameState.mapSystem.tiles.map(row => [...row]);
         this.loadObjects();
         this.renderGrid();
