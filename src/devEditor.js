@@ -39,7 +39,7 @@ class DevEditor {
         this.objectModalRequiresSelect = document.getElementById('editor-object-requires');
         this.objectModalLockRow = document.getElementById('editor-object-lock-row');
         this.objectModalLockedCheckbox = document.getElementById('editor-object-locked');
-        this.objectModalLinkedInput = document.getElementById('editor-object-linked');
+        this.objectModalLinkedSelect = document.getElementById('editor-object-linked');
         this.objectModalSaveBtn = document.getElementById('editor-object-save-btn');
         this.objectModalDeleteBtn = document.getElementById('editor-object-delete-btn');
         this.objectModalCancelBtn = document.getElementById('editor-object-cancel-btn');
@@ -445,7 +445,7 @@ class DevEditor {
         const titleType = category === 'doors' ? 'Door' : (category === 'collectibles' ? 'Collectible' : obj.type === 'loot' ? 'Intel Briefcase' : 'Bomb');
         this.objectModalTitle.textContent = `Edit ${titleType}`;
         this.objectModalIdInput.value = obj.id || '';
-        this.objectModalLinkedInput.value = obj.linkedTo || '';
+        this.populateLinkedOptions(obj.id, obj.linkedTo || '');
 
         // Type row
         if (category === 'collectibles') {
@@ -493,6 +493,37 @@ class DevEditor {
         });
     }
 
+    populateLinkedOptions(currentId, selectedValue) {
+        if (!this.objectModalLinkedSelect) return;
+        this.objectModalLinkedSelect.innerHTML = '';
+        const noneOption = document.createElement('option');
+        noneOption.value = '';
+        noneOption.textContent = 'No association';
+        this.objectModalLinkedSelect.appendChild(noneOption);
+
+        this.getAllObjectIds(currentId).forEach(id => {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = id;
+            if (selectedValue === id) {
+                option.selected = true;
+            }
+            this.objectModalLinkedSelect.appendChild(option);
+        });
+    }
+
+    getAllObjectIds(excludeId) {
+        const ids = [];
+        ['doors', 'collectibles', 'interactive'].forEach(category => {
+            this.objects[category].forEach(item => {
+                if (item.id && item.id !== excludeId) {
+                    ids.push(item.id);
+                }
+            });
+        });
+        return ids;
+    }
+
     saveObjectModal() {
         if (!this.modalContext) return;
         const { category, index } = this.modalContext;
@@ -500,7 +531,7 @@ class DevEditor {
         const obj = collection[index];
         if (!obj) return;
         obj.id = this.objectModalIdInput.value.trim();
-        obj.linkedTo = this.objectModalLinkedInput.value.trim();
+        obj.linkedTo = this.objectModalLinkedSelect?.value || '';
 
         if (category === 'collectibles') {
             obj.type = this.objectModalTypeSelect.value || obj.type;
