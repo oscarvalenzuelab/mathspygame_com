@@ -540,7 +540,15 @@ html {
     flex-wrap: wrap;
 }
 
-.editor-tool-button {
+.editor-tile-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-right: 10px;
+}
+
+.editor-tool-button,
+.editor-tile-button {
     background: #1f1f1f;
     border: 1px solid #444;
     color: #fff;
@@ -551,7 +559,12 @@ html {
     transition: background 0.2s, border-color 0.2s;
 }
 
-.editor-tool-button.active {
+.editor-tool-button {
+    min-width: 90px;
+}
+
+.editor-tool-button.active,
+.editor-tile-button.active {
     background: #2e7d32;
     border-color: #66bb6a;
 }

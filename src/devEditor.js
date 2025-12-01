@@ -12,7 +12,7 @@ class DevEditor {
         this.container = document.getElementById('map-editor');
         if (!this.container) return;
         this.gridEl = document.getElementById('map-editor-grid');
-        this.tileSelect = document.getElementById('map-editor-type');
+        this.tileButtons = Array.from(document.querySelectorAll('#map-editor-tile-buttons .editor-tile-button'));
         this.exportBtn = document.getElementById('map-editor-export-btn');
         this.applyBtn = document.getElementById('map-editor-apply-btn');
         this.closeBtn = document.getElementById('map-editor-close-btn');
@@ -20,6 +20,7 @@ class DevEditor {
         this.objectList = document.getElementById('map-editor-object-list');
         this.objectButtons = Array.from(document.querySelectorAll('#map-editor-object-buttons .editor-tool-button'));
         this.activeTool = 'tiles';
+        this.activeTileType = 'floor';
         this.objects = { doors: [], collectibles: [], interactive: [] };
         this.tileSize = 40;
         this.currentLevel = 1;
@@ -27,6 +28,7 @@ class DevEditor {
         this.dragState = null;
         this.skipNextClick = false;
         this.wasPaused = false;
+        this.idCounters = {};
 
         this.objectModalEl = document.getElementById('editor-object-modal');
         this.objectModalTitle = document.getElementById('editor-object-modal-title');
@@ -45,6 +47,7 @@ class DevEditor {
 
         this.bindEvents();
         this.setActiveTool('tiles');
+        this.setActiveTileType('floor');
     }
 
     bindEvents() {
@@ -61,6 +64,9 @@ class DevEditor {
         this.objectButtons.forEach(btn => {
             btn.addEventListener('click', () => this.setActiveTool(btn.dataset.editorTool));
         });
+        this.tileButtons.forEach(btn => {
+            btn.addEventListener('click', () => this.setActiveTileType(btn.dataset.tileType));
+        });
 
         this.objectModalSaveBtn?.addEventListener('click', () => this.saveObjectModal());
         this.objectModalDeleteBtn?.addEventListener('click', () => this.deleteObjectFromModal());
@@ -74,14 +80,21 @@ class DevEditor {
         });
     }
 
+    setActiveTileType(tileType) {
+        this.activeTileType = tileType;
+        this.tileButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tileType === tileType);
+        });
+    }
+
     getSelectedTile() {
-        if (!this.tileSelect) return 'floor';
-        return this.tileSelect.value;
+        return this.activeTileType || 'floor';
     }
 
     open() {
         if (!this.container) return;
         this.currentLevel = this.game.gameState.currentLevel || 1;
+        this.idCounters = {};
         const tiles = this.game.gameState.mapSystem.tiles;
         this.tileSize = this.game.gameState.mapSystem.tileSize;
         this.tiles = tiles.map(row => [...row]);
@@ -102,9 +115,47 @@ class DevEditor {
         const interactive = Array.isArray(mission.interactiveObjects) ? mission.interactiveObjects : this.levelBlueprint?.interactiveObjects || [];
         const collectibles = Array.isArray(mission.collectibles) ? mission.collectibles : this.levelBlueprint?.collectibles || [];
 
-        this.objects.doors = doors.map(door => this.normalizeDoor(door));
-        this.objects.interactive = interactive.map(obj => this.normalizeInteractive(obj));
-        this.objects.collectibles = collectibles.map(item => this.normalizeCollectible(item));
+        this.objects.doors = doors.map(door => this.ensureObjectId('doors', this.normalizeDoor(door)));
+        this.objects.interactive = interactive.map(obj => this.ensureObjectId('interactive', this.normalizeInteractive(obj)));
+        this.objects.collectibles = collectibles.map(item => this.ensureObjectId('collectibles', this.normalizeCollectible(item)));
+    }
+
+    ensureObjectId(category, obj) {
+        if (!obj.id) {
+            obj.id = this.generateId(this.getPrefixForCategory(category, obj));
+        } else {
+            this.registerExistingId(obj.id);
+        }
+        return obj;
+    }
+
+    generateId(prefix) {
+        if (!this.idCounters[prefix]) {
+            this.idCounters[prefix] = 1;
+        }
+        const id = `${prefix}-${this.currentLevel}-${this.idCounters[prefix]}`;
+        this.idCounters[prefix] += 1;
+        return id;
+    }
+
+    registerExistingId(id) {
+        const match = /^([a-z_]+)-([0-9]+)-([0-9]+)$/i.exec(id);
+        if (!match) return;
+        const prefix = match[1];
+        const level = parseInt(match[2], 10);
+        const counter = parseInt(match[3], 10);
+        if (level !== this.currentLevel || isNaN(counter)) return;
+        const next = counter + 1;
+        if (!this.idCounters[prefix] || this.idCounters[prefix] < next) {
+            this.idCounters[prefix] = next;
+        }
+    }
+
+    getPrefixForCategory(category, obj) {
+        if (category === 'doors') return 'door';
+        if (category === 'collectibles') return obj?.type || 'collectible';
+        if (category === 'interactive') return obj?.type || 'interactive';
+        return 'obj';
     }
 
     normalizeDoor(door) {
@@ -324,7 +375,7 @@ class DevEditor {
             return {
                 category: 'doors',
                 object: {
-                    id: '',
+                    id: this.generateId('door'),
                     gridX,
                     gridY,
                     gridWidth: 1,
@@ -340,7 +391,7 @@ class DevEditor {
             return {
                 category: 'collectibles',
                 object: {
-                    id: '',
+                    id: this.generateId(tool),
                     type: tool,
                     gridX,
                     gridY,
@@ -355,7 +406,7 @@ class DevEditor {
             return {
                 category: 'interactive',
                 object: {
-                    id: '',
+                    id: this.generateId(tool),
                     type: tool,
                     gridX,
                     gridY,

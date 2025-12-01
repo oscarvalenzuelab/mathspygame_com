@@ -116,15 +116,13 @@
         <div class="modal-content map-editor">
             <h2>Map Editor (Dev)</h2>
             <div class="editor-toolbar">
-                <label>Paint Tile:
-                    <select id="map-editor-type">
-                        <option value="floor">Floor</option>
-                        <option value="wall">Wall</option>
-                        <option value="door_locked">Locked Door</option>
-                        <option value="door_unlocked">Unlocked Door</option>
-                        <option value="obstacle">Obstacle</option>
-                    </select>
-                </label>
+                <div id="map-editor-tile-buttons" class="editor-tile-buttons" aria-label="Tile Brush">
+                    <button class="editor-tile-button active" data-tile-type="floor">Floor</button>
+                    <button class="editor-tile-button" data-tile-type="wall">Wall</button>
+                    <button class="editor-tile-button" data-tile-type="door_locked">Locked Door</button>
+                    <button class="editor-tile-button" data-tile-type="door_unlocked">Open Door</button>
+                    <button class="editor-tile-button" data-tile-type="obstacle">Obstacle</button>
+                </div>
                 <div id="map-editor-object-buttons" class="editor-object-buttons">
                     <button class="editor-tool-button active" data-editor-tool="tiles">Tile Brush</button>
                     <button class="editor-tool-button" data-editor-tool="door">Door</button>
