@@ -219,6 +219,18 @@ html {
     font-size: 13px;
 }
 
+.control-items-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 4px 16px;
+}
+
+@media (max-width: 520px) {
+    .control-items-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .control-item {
     padding: 4px 0;
     color: #ccc;
