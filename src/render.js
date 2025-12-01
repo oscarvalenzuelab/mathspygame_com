@@ -7,6 +7,7 @@ class Renderer {
         this.ctx = canvas.getContext('2d');
         this.entityContainer = null;
         this.entitiesDrawnThisFrame = new Set();
+        this.mapDrawnOnce = false;
         this.setupEntityContainer();
     }
 
@@ -80,7 +81,24 @@ class Renderer {
 
     drawMap(mapSystem) {
         const tileSize = mapSystem.tileSize;
-        
+
+        if (!mapSystem.tiles || mapSystem.tiles.length === 0) {
+            console.error('No tiles in mapSystem!', mapSystem);
+            return;
+        }
+
+        if (!this.mapDrawnOnce) {
+            console.log('Drawing map for first time:', {
+                mapWidth: mapSystem.mapWidth,
+                mapHeight: mapSystem.mapHeight,
+                tileSize: tileSize,
+                tilesLength: mapSystem.tiles.length,
+                canvasWidth: this.canvas.width,
+                canvasHeight: this.canvas.height
+            });
+            this.mapDrawnOnce = true;
+        }
+
         for (let y = 0; y < mapSystem.mapHeight; y++) {
             for (let x = 0; x < mapSystem.mapWidth; x++) {
                 const tileX = x * tileSize;
