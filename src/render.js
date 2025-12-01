@@ -1,5 +1,5 @@
 import { ICON_CONFIG } from './gameConfig.js';
-import SpriteManager from './spriteManager.js';
+import SpriteManager from './spriteManager.js?v=20231130';
 
 // Rendering system for canvas with Pixel Art Sprites
 class Renderer {

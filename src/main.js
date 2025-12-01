@@ -7,7 +7,7 @@ import MissionManager from './missions.js';
 import LevelManager from './levels.js';
 import AudioManager from './audio.js';
 import DevEditor from './devEditor.js';
-import PixelArtEditor from './pixelArtEditor.js';
+import PixelArtEditor from './pixelArtEditor.js?v=20231130';
 import { loadLayouts } from './levelLayouts/layoutLoader.js?v=20231130';
 
 class Game {
