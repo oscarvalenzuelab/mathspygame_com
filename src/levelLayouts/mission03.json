@@ -514,9 +514,10 @@
       "y": 420,
       "width": 30,
       "height": 30,
-      "requires": "money",
-      "consumeRequirement": true,
-      "displayName": "Pay the informant"
+      "requires": "money_all",
+      "consumeRequirement": false,
+      "displayName": "Pay the informant",
+      "requirementMessage": "Gather all cash before meeting the informant!"
     },
     {
       "id": "loot-3-1",

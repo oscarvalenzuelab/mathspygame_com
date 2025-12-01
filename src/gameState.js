@@ -607,6 +607,18 @@ class GameState {
             };
         }
 
+        if (obj.requires === 'money_all') {
+            const remainingCash = this.collectibles.some(col => col.type === 'money' && !col.collected);
+            if (remainingCash) {
+                return {
+                    allowed: false,
+                    type: 'requires_item',
+                    message: obj.requirementMessage || 'Collect all cash before meeting the informant!'
+                };
+            }
+            return { allowed: true };
+        }
+
         if (obj.requires === 'money') {
             if (this.inventory.money > 0) {
                 return { allowed: true };
