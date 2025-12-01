@@ -403,28 +403,28 @@ html {
     border-color: #4CAF50;
 }
 
-.editor-actions {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #444;
-}
-
 .editor-action-btn {
-    padding: 10px 20px;
-    background: #4CAF50;
+    padding: 8px 16px;
+    background: #1f1f1f;
     color: #fff;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid #444;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: background 0.3s;
+    gap: 6px;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
 }
 
 .editor-action-btn:hover {
-    background: #45a049;
+    background: #2e7d32;
+    border-color: #66bb6a;
+}
+
+.editor-action-btn i {
+    font-size: 14px;
 }
 
 .control-button {

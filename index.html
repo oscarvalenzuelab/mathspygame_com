@@ -136,20 +136,18 @@
                     <button class="editor-tool-button" data-editor-tool="bomb">Bomb</button>
                     <button class="editor-tool-button" data-editor-tool="loot">Intel Briefcase</button>
                 </div>
-                <button id="map-editor-export-btn">Export Layout</button>
-                <button id="map-editor-apply-btn">Apply</button>
-                <button id="map-editor-close-btn">Close</button>
+                <button id="map-editor-sprite-editor-btn" class="editor-action-btn">
+                    <i class="bi bi-palette"></i> Sprite Editor
+                </button>
+                <button id="map-editor-export-btn" class="editor-action-btn">Export Layout</button>
+                <button id="map-editor-apply-btn" class="editor-action-btn">Apply</button>
+                <button id="map-editor-close-btn" class="editor-action-btn">Close</button>
             </div>
             <p class="editor-hint">Select a tool and click the grid to add an object. Click an existing object to edit it, or click and hold to drag it to a new square.</p>
             <p class="editor-hint">Use associations to link keys to doors or intel briefcases to bombs so requirements are clear in the exported JSON.</p>
             <div id="map-editor-grid"></div>
             <div id="map-editor-object-list" class="editor-object-list"></div>
             <textarea id="map-editor-export-output" rows="6" readonly></textarea>
-            <div class="editor-actions">
-                <button id="map-editor-sprite-editor-btn" class="editor-action-btn">
-                    <i class="bi bi-palette"></i> Sprite Editor
-                </button>
-            </div>
         </div>
     </div>
 
