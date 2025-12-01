@@ -67,6 +67,7 @@ class GameState {
         this.stateChangeListener = null;
         this.defeatedEnemies = new Set();
         this.spawnGraceTimer = 0;
+        this.missionType = 'defuse_bombs';
     }
 
     loadLevel(levelData, options = {}) {
@@ -453,42 +454,6 @@ class GameState {
         });
     }
 
-    checkCollectibles(inputManager) {
-        if (this.isPaused || this.gameOver || this.won) return;
-
-        this.collectibles.forEach(collectible => {
-            if (collectible.collected) return;
-
-            // Check if player is near collectible and presses action key
-            const distance = Math.sqrt(
-                Math.pow(this.player.x + this.player.width/2 - (collectible.x + collectible.width/2), 2) +
-                Math.pow(this.player.y + this.player.height/2 - (collectible.y + collectible.height/2), 2)
-            );
-
-            if (distance < 50 && inputManager.isActionPressed()) {
-                collectible.collected = true;
-                
-                // Add to inventory
-                if (collectible.type === "key") {
-                    this.inventory.keys++;
-                    this.score += 25;
-                } else if (collectible.type === "money") {
-                    this.inventory.money++;
-                    this.score += 10;
-                } else if (collectible.type === "secret") {
-                    this.inventory.secrets++;
-                    this.score += 50;
-                } else if (collectible.type === "health") {
-                    const healAmount = Math.round(this.player.maxHealth * 0.1);
-                    this.player.health = Math.min(this.player.maxHealth, this.player.health + healAmount);
-                    this.score += 5;
-                }
-                this.notifyChange();
-                inputManager.onItemPickup?.();
-            }
-        });
-    }
-
     checkCollisions() {
         if (this.isPaused || this.gameOver || this.won) return;
 
@@ -586,6 +551,18 @@ class GameState {
                     return { type: requirement.type, message: requirement.message };
                 }
                 return obj;
+            }
+        }
+
+        // Check collectibles (keys, money, etc.)
+        for (const collectible of this.collectibles) {
+            if (collectible.collected) continue;
+            const distance = Math.sqrt(
+                Math.pow(this.player.x + this.player.width/2 - (collectible.x + collectible.width/2), 2) +
+                Math.pow(this.player.y + this.player.height/2 - (collectible.y + collectible.height/2), 2)
+            );
+            if (distance < 50 && inputManager.isActionPressed()) {
+                return collectible;
             }
         }
 
@@ -690,17 +667,23 @@ class GameState {
         this.notifyChange();
     }
 
-    handleMathAnswer(correct, objectId) {
-        const obj = this.interactiveObjects.find(o => o.id === objectId);
-        if (!obj) return;
+    handleMathAnswer(correct, objectId, inputManager) {
+        let obj = this.interactiveObjects.find(o => o.id === objectId);
+        let collectibleTarget = null;
+        if (!obj) {
+            collectibleTarget = this.collectibles.find(c => c.id === objectId);
+            if (!collectibleTarget) return;
+        }
 
         if (correct) {
-            this.consumeRequirementResource(obj);
-            if (obj.type === "bomb") {
+            if (obj) {
+                this.consumeRequirementResource(obj);
+            }
+            if (obj && obj.type === "bomb") {
                 obj.solved = true;
                 obj.active = false;
                 this.score += 100;
-            } else if (obj.type === "loot") {
+            } else if (obj && obj.type === "loot") {
                 obj.collected = true;
                 obj.active = false;
                 if (!obj.grantedSecret) {
@@ -709,23 +692,28 @@ class GameState {
                 }
                 this.hasIntel = true;
                 this.score += 150;
-            } else if (obj.type === 'secret_asset') {
+            } else if (obj && obj.type === 'secret_asset') {
                 obj.collected = true;
                 obj.active = false;
                 this.inventory.secrets++;
                 this.hasIntel = true;
                 this.score += 175;
-            } else if (obj.type === 'vendor') {
+            } else if (obj && obj.type === 'vendor') {
                 obj.collected = true;
                 obj.active = false;
                 this.inventory.secrets++;
                 this.hasIntel = true;
                 this.score += 200;
+            } else if (collectibleTarget) {
+                this.collectCollectible(collectibleTarget);
+                inputManager?.onItemPickup?.();
             }
         } else {
-            obj.wrongAttempts = (obj.wrongAttempts || 0) + 1;
-            if (obj.type === "loot" && obj.wrongAttempts >= 3 && !obj.trapActive) {
-                this.activateTrapBomb(obj);
+            if (obj) {
+                obj.wrongAttempts = (obj.wrongAttempts || 0) + 1;
+                if (obj.type === "loot" && obj.wrongAttempts >= 3 && !obj.trapActive) {
+                    this.activateTrapBomb(obj);
+                }
             }
             // Wrong answer penalty
             this.player.health -= 15;
@@ -736,6 +724,25 @@ class GameState {
             }
         }
         this.notifyChange();
+    }
+
+    collectCollectible(collectible) {
+        if (!collectible || collectible.collected) return;
+        collectible.collected = true;
+        if (collectible.type === "key") {
+            this.inventory.keys++;
+            this.score += 25;
+        } else if (collectible.type === "money") {
+            this.inventory.money++;
+            this.score += 10;
+        } else if (collectible.type === "secret") {
+            this.inventory.secrets++;
+            this.score += 50;
+        } else if (collectible.type === "health") {
+            const healAmount = Math.round(this.player.maxHealth * 0.1);
+            this.player.health = Math.min(this.player.maxHealth, this.player.health + healAmount);
+            this.score += 5;
+        }
     }
 
     consumeRequirementResource(obj) {

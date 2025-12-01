@@ -232,7 +232,7 @@ class Game {
                 if (correct) {
                     mathFeedback.textContent = 'Correct!';
                     mathFeedback.className = 'feedback correct';
-                    this.gameState.handleMathAnswer(true, objectId);
+                    this.gameState.handleMathAnswer(true, objectId, this.inputManager);
                     this.audioManager.playSuccessChime();
                     
                     // Check if this completes a mission
@@ -273,7 +273,7 @@ class Game {
                 } else {
                     mathFeedback.textContent = 'Wrong! Try again.';
                     mathFeedback.className = 'feedback wrong';
-                    this.gameState.handleMathAnswer(false, objectId);
+                    this.gameState.handleMathAnswer(false, objectId, this.inputManager);
                     this.audioManager.playErrorTone();
                     
                     // Clear input for retry
@@ -627,7 +627,6 @@ class Game {
         this.gameState.updateTrapBombs(deltaTime, this.inputManager);
         this.gameState.updateMissionTimer(deltaTime);
         this.gameState.checkCollisions();
-        this.gameState.checkCollectibles(this.inputManager);
 
         // Clear pressed keys at end of frame
         this.inputManager.clearPressedKeys();

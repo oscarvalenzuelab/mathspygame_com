@@ -141,10 +141,12 @@ class LevelManager {
         const collectibles = this.buildCollectibles(spec, missionConfig);
         const doors = this.buildDoors(spec, missionConfig);
 
+        const timeLimit = missionConfig.timeLimit || this.calculateTimeLimit(enemies.length, interactiveObjects, collectibles);
+
         return {
             name: `Mission ${spec.level}`,
             mathDifficulty: spec.mathDifficulty,
-            timeLimit: spec.timeLimit,
+            timeLimit,
             map,
             playerStart,
             enemies,
@@ -302,6 +304,16 @@ class LevelManager {
             });
         }
         return interactiveObjects;
+    }
+
+    calculateTimeLimit(enemyCount, interactiveObjects, collectibles) {
+        const bombCount = interactiveObjects.filter(obj => obj.type === 'bomb').length;
+        const otherInteractions = interactiveObjects.length - bombCount;
+        const bombTime = bombCount * 20;
+        const interactionTime = otherInteractions * 15;
+        const collectibleTime = collectibles.length * 15;
+        const enemyTime = enemyCount * 15;
+        return Math.max(60, bombTime + interactionTime + collectibleTime + enemyTime);
     }
 
     buildCollectibles(spec, missionConfig) {
