@@ -19,6 +19,223 @@ class PixelArtEditor {
         this.setupColorPalette();
         this.setupTools();
         this.initializePixels();
+        this.templates = this.createTemplates();
+    }
+
+    createTemplates() {
+        // Default pixel art templates for each sprite type
+        return {
+            player: this.createPlayerTemplate(),
+            enemy: this.createEnemyTemplate(),
+            bomb: this.createBombTemplate(),
+            loot: this.createLootTemplate(),
+            key: this.createKeyTemplate(),
+            money: this.createMoneyTemplate(),
+            secret: this.createSecretTemplate(),
+            door: this.createDoorTemplate(),
+            projectile: this.createProjectileTemplate()
+        };
+    }
+
+    createPlayerTemplate() {
+        // Simple player character (blue person)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Head
+        for (let y = 2; y < 6; y++) {
+            for (let x = 6; x < 10; x++) {
+                pixels[y][x] = '#4a90e2';
+            }
+        }
+        // Body
+        for (let y = 6; y < 12; y++) {
+            for (let x = 5; x < 11; x++) {
+                pixels[y][x] = '#4a90e2';
+            }
+        }
+        // Legs
+        for (let y = 12; y < 16; y++) {
+            pixels[y][6] = '#4a90e2';
+            pixels[y][7] = '#4a90e2';
+            pixels[y][8] = '#4a90e2';
+            pixels[y][9] = '#4a90e2';
+        }
+        // Eyes
+        pixels[4][7] = '#ffffff';
+        pixels[4][8] = '#ffffff';
+        return pixels;
+    }
+
+    createEnemyTemplate() {
+        // Simple enemy (red square with eyes)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Body
+        for (let y = 3; y < 13; y++) {
+            for (let x = 3; x < 13; x++) {
+                pixels[y][x] = '#e74c3c';
+            }
+        }
+        // Eyes
+        pixels[6][6] = '#ffffff';
+        pixels[6][9] = '#ffffff';
+        pixels[7][6] = '#000000';
+        pixels[7][9] = '#000000';
+        return pixels;
+    }
+
+    createBombTemplate() {
+        // Bomb (black circle with fuse)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Fuse
+        pixels[2][8] = '#8B4513';
+        pixels[3][8] = '#8B4513';
+        pixels[4][7] = '#8B4513';
+        pixels[4][8] = '#ff4444';
+        // Bomb body (circle approximation)
+        for (let y = 5; y < 13; y++) {
+            for (let x = 4; x < 12; x++) {
+                const dx = x - 8;
+                const dy = y - 9;
+                if (dx * dx + dy * dy < 16) {
+                    pixels[y][x] = '#1a1a1a';
+                }
+            }
+        }
+        // Highlight
+        pixels[7][7] = '#333';
+        return pixels;
+    }
+
+    createLootTemplate() {
+        // Briefcase (brown rectangle with handle)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Handle
+        for (let x = 6; x < 10; x++) {
+            pixels[3][x] = '#8B4513';
+        }
+        // Body
+        for (let y = 4; y < 12; y++) {
+            for (let x = 4; x < 12; x++) {
+                pixels[y][x] = '#f39c12';
+            }
+        }
+        // Lock
+        pixels[7][7] = '#ffd700';
+        pixels[7][8] = '#ffd700';
+        pixels[8][7] = '#ffd700';
+        pixels[8][8] = '#ffd700';
+        return pixels;
+    }
+
+    createKeyTemplate() {
+        // Key (gold key shape)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Key head (circle)
+        for (let y = 3; y < 9; y++) {
+            for (let x = 3; x < 9; x++) {
+                const dx = x - 6;
+                const dy = y - 6;
+                if (dx * dx + dy * dy < 9) {
+                    pixels[y][x] = '#ffd700';
+                }
+            }
+        }
+        // Key shaft
+        for (let y = 6; y < 13; y++) {
+            pixels[y][6] = '#ffd700';
+            pixels[y][7] = '#ffd700';
+        }
+        // Key teeth
+        pixels[10][5] = '#ffd700';
+        pixels[11][5] = '#ffd700';
+        pixels[12][6] = '#ffd700';
+        return pixels;
+    }
+
+    createMoneyTemplate() {
+        // Coin (green circle with $)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Coin body
+        for (let y = 3; y < 13; y++) {
+            for (let x = 3; x < 13; x++) {
+                const dx = x - 8;
+                const dy = y - 8;
+                if (dx * dx + dy * dy < 25) {
+                    pixels[y][x] = '#4CAF50';
+                }
+            }
+        }
+        // $ symbol (simplified)
+        pixels[7][7] = '#ffffff';
+        pixels[7][8] = '#ffffff';
+        pixels[8][7] = '#ffffff';
+        pixels[9][7] = '#ffffff';
+        pixels[9][8] = '#ffffff';
+        return pixels;
+    }
+
+    createSecretTemplate() {
+        // Document (white paper with lines)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Paper
+        for (let y = 2; y < 14; y++) {
+            for (let x = 3; x < 13; x++) {
+                pixels[y][x] = '#ffffff';
+            }
+        }
+        // Text lines
+        for (let x = 4; x < 12; x++) {
+            pixels[5][x] = '#000000';
+            pixels[7][x] = '#000000';
+            pixels[9][x] = '#000000';
+        }
+        // Lock icon
+        pixels[10][7] = '#9c27b0';
+        pixels[10][8] = '#9c27b0';
+        pixels[11][7] = '#9c27b0';
+        pixels[11][8] = '#9c27b0';
+        return pixels;
+    }
+
+    createDoorTemplate() {
+        // Door (brown rectangle with lock)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Door frame
+        for (let y = 1; y < 15; y++) {
+            for (let x = 2; x < 14; x++) {
+                pixels[y][x] = '#8B4513';
+            }
+        }
+        // Door panel
+        for (let y = 2; y < 14; y++) {
+            for (let x = 3; x < 13; x++) {
+                pixels[y][x] = '#654321';
+            }
+        }
+        // Lock
+        pixels[7][7] = '#ffd700';
+        pixels[7][8] = '#ffd700';
+        pixels[8][7] = '#ffd700';
+        pixels[8][8] = '#ffd700';
+        pixels[9][8] = '#ffd700';
+        return pixels;
+    }
+
+    createProjectileTemplate() {
+        // Projectile (yellow circle)
+        const pixels = Array(16).fill(null).map(() => Array(16).fill(null));
+        // Bullet
+        for (let y = 5; y < 11; y++) {
+            for (let x = 5; x < 11; x++) {
+                const dx = x - 8;
+                const dy = y - 8;
+                if (dx * dx + dy * dy < 9) {
+                    pixels[y][x] = '#ffeb3b';
+                }
+            }
+        }
+        // Highlight
+        pixels[6][7] = '#fff59d';
+        return pixels;
     }
 
     setupEditor() {
@@ -27,6 +244,7 @@ class PixelArtEditor {
         this.clearBtn = document.getElementById('pixel-art-clear-btn');
         this.spriteTypeSelect = document.getElementById('pixel-art-sprite-type');
         this.loadBtn = document.getElementById('pixel-art-load-btn');
+        this.loadTemplateBtn = document.getElementById('pixel-art-load-template-btn');
         
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => this.close());
@@ -45,6 +263,9 @@ class PixelArtEditor {
         }
         if (this.loadBtn) {
             this.loadBtn.addEventListener('click', () => this.loadSprite());
+        }
+        if (this.loadTemplateBtn) {
+            this.loadTemplateBtn.addEventListener('click', () => this.loadTemplate());
         }
 
         // Canvas drawing
@@ -346,6 +567,18 @@ class PixelArtEditor {
         } catch (error) {
             console.warn('Failed to load sprite', error);
             this.initializePixels();
+        }
+    }
+
+    loadTemplate() {
+        const template = this.templates[this.spriteType];
+        if (template) {
+            // Deep copy the template
+            this.pixels = template.map(row => row.map(cell => cell));
+            this.drawGrid();
+            if (this.game) {
+                this.game.showNotification(`Loaded ${this.spriteType} template`, 'info');
+            }
         }
     }
 
