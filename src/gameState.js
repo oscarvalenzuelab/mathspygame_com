@@ -5,7 +5,7 @@ class GameState {
     constructor(canvasWidth, canvasHeight) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.mapSystem = new MapSystem(canvasWidth, canvasHeight);
+        this.mapSystem = new MapSystem(canvasWidth, canvasHeight, LEVEL_SETTINGS.tileSize);
         
         // Player
         this.player = {
