@@ -1,63 +1,178 @@
 {
   "layout": [
     {
+      "x": 0,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "type": "wall"
+    },
+    {
       "x": 8,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 13,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 14,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 16,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 17,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 18,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 19,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 20,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 21,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 22,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 23,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 24,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 25,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 26,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 27,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 28,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 0,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 1,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 2,
+      "type": "wall"
+    },
+    {
+      "x": 0,
       "y": 3,
-      "type": "wall"
-    },
-    {
-      "x": 8,
-      "y": 4,
-      "type": "wall"
-    },
-    {
-      "x": 8,
-      "y": 5,
-      "type": "wall"
-    },
-    {
-      "x": 8,
-      "y": 6,
-      "type": "wall"
-    },
-    {
-      "x": 8,
-      "y": 7,
-      "type": "wall"
-    },
-    {
-      "x": 8,
-      "y": 8,
-      "type": "wall"
-    },
-    {
-      "x": 15,
-      "y": 3,
-      "type": "wall"
-    },
-    {
-      "x": 15,
-      "y": 4,
-      "type": "wall"
-    },
-    {
-      "x": 15,
-      "y": 5,
-      "type": "wall"
-    },
-    {
-      "x": 15,
-      "y": 6,
-      "type": "wall"
-    },
-    {
-      "x": 15,
-      "y": 7,
-      "type": "wall"
-    },
-    {
-      "x": 15,
-      "y": 8,
       "type": "wall"
     },
     {
@@ -101,6 +216,151 @@
       "type": "wall"
     },
     {
+      "x": 29,
+      "y": 3,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "type": "wall"
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 4,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 4,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "type": "wall"
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "type": "door_locked"
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 5,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "type": "wall"
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "type": "wall"
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "type": "obstacle"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "type": "obstacle"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "type": "obstacle"
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "type": "obstacle"
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 6,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "type": "wall"
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "type": "wall"
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "type": "obstacle"
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "type": "obstacle"
+    },
+    {
+      "x": 12,
+      "y": 7,
+      "type": "obstacle"
+    },
+    {
+      "x": 15,
+      "y": 7,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 7,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "type": "wall"
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 8,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "type": "wall"
+    },
+    {
       "x": 8,
       "y": 9,
       "type": "wall"
@@ -141,63 +401,13 @@
       "type": "wall"
     },
     {
-      "x": 18,
+      "x": 29,
+      "y": 9,
+      "type": "wall"
+    },
+    {
+      "x": 0,
       "y": 10,
-      "type": "wall"
-    },
-    {
-      "x": 18,
-      "y": 11,
-      "type": "wall"
-    },
-    {
-      "x": 18,
-      "y": 12,
-      "type": "wall"
-    },
-    {
-      "x": 18,
-      "y": 13,
-      "type": "wall"
-    },
-    {
-      "x": 18,
-      "y": 14,
-      "type": "wall"
-    },
-    {
-      "x": 18,
-      "y": 15,
-      "type": "wall"
-    },
-    {
-      "x": 25,
-      "y": 10,
-      "type": "wall"
-    },
-    {
-      "x": 25,
-      "y": 11,
-      "type": "wall"
-    },
-    {
-      "x": 25,
-      "y": 12,
-      "type": "wall"
-    },
-    {
-      "x": 25,
-      "y": 13,
-      "type": "wall"
-    },
-    {
-      "x": 25,
-      "y": 14,
-      "type": "wall"
-    },
-    {
-      "x": 25,
-      "y": 15,
       "type": "wall"
     },
     {
@@ -241,49 +451,94 @@
       "type": "wall"
     },
     {
+      "x": 29,
+      "y": 10,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 11,
+      "type": "wall"
+    },
+    {
       "x": 18,
-      "y": 16,
-      "type": "wall"
-    },
-    {
-      "x": 19,
-      "y": 16,
-      "type": "wall"
-    },
-    {
-      "x": 20,
-      "y": 16,
-      "type": "wall"
-    },
-    {
-      "x": 21,
-      "y": 16,
-      "type": "wall"
-    },
-    {
-      "x": 22,
-      "y": 16,
-      "type": "wall"
-    },
-    {
-      "x": 23,
-      "y": 16,
-      "type": "wall"
-    },
-    {
-      "x": 24,
-      "y": 16,
+      "y": 11,
       "type": "wall"
     },
     {
       "x": 25,
-      "y": 16,
+      "y": 11,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 11,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 11,
+      "y": 12,
       "type": "wall"
     },
     {
       "x": 12,
-      "y": 6,
-      "type": "obstacle"
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 13,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 14,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 18,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 25,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 12,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 13,
+      "type": "wall"
+    },
+    {
+      "x": 11,
+      "y": 13,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 13,
+      "type": "wall"
+    },
+    {
+      "x": 18,
+      "y": 13,
+      "type": "wall"
     },
     {
       "x": 22,
@@ -291,102 +546,409 @@
       "type": "obstacle"
     },
     {
+      "x": 25,
+      "y": 13,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 13,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 14,
+      "type": "wall"
+    },
+    {
+      "x": 11,
+      "y": 14,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 14,
+      "type": "wall"
+    },
+    {
+      "x": 25,
+      "y": 14,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 14,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 15,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 15,
+      "type": "wall"
+    },
+    {
+      "x": 18,
+      "y": 15,
+      "type": "door_unlocked"
+    },
+    {
       "x": 22,
       "y": 15,
       "type": "obstacle"
+    },
+    {
+      "x": 25,
+      "y": 15,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 15,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 19,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 20,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 21,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 22,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 23,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 24,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 25,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 16,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 11,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 12,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 13,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 14,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 17,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 18,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 18,
+      "type": "wall"
+    },
+    {
+      "x": 0,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 1,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 2,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 3,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 4,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 5,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 6,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 7,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 8,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 9,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 10,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 11,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 12,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 13,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 14,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 15,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 16,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 17,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 18,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 19,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 20,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 21,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 22,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 23,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 24,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 25,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 26,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 27,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 28,
+      "y": 19,
+      "type": "wall"
+    },
+    {
+      "x": 29,
+      "y": 19,
+      "type": "wall"
     }
   ],
   "playerStart": {
     "x": 240,
     "y": 600
   },
-  "interactiveObjects": [
+  "doors": [
     {
-      "id": "bomb-2-1",
-      "type": "bomb",
-      "x": 520,
-      "y": 600,
-      "width": 30,
-      "height": 30,
-      "requires": "intel"
+      "gridX": 8,
+      "gridY": 5,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "requires": "key",
+      "unlocked": false,
+      "id": "door-2-1"
     },
     {
-      "id": "loot-2-1",
-      "type": "loot",
-      "x": 840,
-      "y": 520,
-      "width": 25,
-      "height": 25
+      "gridX": 18,
+      "gridY": 15,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "requires": "secret",
+      "unlocked": false,
+      "id": "door-2-override-1",
+      "linkedTo": "secret-2-1"
     }
   ],
   "collectibles": [
     {
-      "id": "key-2-1",
       "type": "key",
-      "x": 240,
-      "y": 200,
-      "width": 20,
-      "height": 20
+      "gridX": 22,
+      "gridY": 6,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "id": "key-2-1"
     },
     {
-      "id": "secret-2-1",
       "type": "secret",
-      "x": 400,
-      "y": 500,
-      "width": 20,
-      "height": 20
+      "gridX": 14,
+      "gridY": 7,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "id": "secret-2-1"
     },
     {
-      "id": "money-2-1",
       "type": "money",
-      "x": 220,
-      "y": 360,
-      "width": 20,
-      "height": 20
+      "gridX": 6,
+      "gridY": 9,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "id": "money-2-1"
     },
     {
-      "id": "money-2-2",
       "type": "money",
-      "x": 480,
-      "y": 200,
-      "width": 20,
-      "height": 20
+      "gridX": 12,
+      "gridY": 5,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "id": "money-2-2"
     },
     {
-      "id": "health-2-1",
       "type": "health",
-      "x": 520,
-      "y": 320,
-      "width": 20,
-      "height": 20
+      "gridX": 20,
+      "gridY": 11,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "id": "health-2-1"
     },
     {
-      "id": "health-2-2",
       "type": "health",
-      "x": 200,
-      "y": 640,
-      "width": 20,
-      "height": 20
+      "gridX": 5,
+      "gridY": 16,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "id": "health-2-2"
     }
   ],
-  "doors": [
+  "interactiveObjects": [
     {
-      "id": "door-2-1",
-      "x": 400,
-      "y": 200,
-      "width": 40,
-      "height": 40,
-      "requires": "key",
-      "unlocked": false
+      "type": "bomb",
+      "gridX": 13,
+      "gridY": 15,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "requires": "intel",
+      "id": "bomb-2-1"
     },
     {
-      "id": "door-2-override-1",
-      "x": 360,
-      "y": 720,
-      "width": 40,
-      "height": 40,
-      "requires": "key",
-      "unlocked": false
+      "type": "loot",
+      "gridX": 21,
+      "gridY": 13,
+      "gridWidth": 1,
+      "gridHeight": 1,
+      "requires": null,
+      "id": "loot-2-1"
     }
   ]
 }
