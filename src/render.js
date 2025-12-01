@@ -11,7 +11,7 @@ class Renderer {
         this.displayScale = 1;
         this.mapDrawnOnce = false;
         this.spriteManager = new SpriteManager();
-        this.usePixelArt = true; // Use pixel art by default
+        this.usePixelArt = false; // Use Bootstrap Icons by default, switch to pixel art when sprites are created
         this.setupEntityContainer();
     }
 
@@ -206,11 +206,14 @@ class Renderer {
         const centerY = door.y + door.height / 2;
         const size = 36;
         
+        // Try pixel art first if enabled
         if (this.usePixelArt) {
-            this.spriteManager.renderSprite(this.ctx, 'door', centerX - size/2, centerY - size/2, size);
-        } else {
-            this.createOrUpdateEntity(`door-${door.id}`, ICON_CONFIG.door, centerX, centerY, size, '#ffd700');
+            const spriteRendered = this.spriteManager.renderSprite(this.ctx, 'door', centerX - size/2, centerY - size/2, size);
+            if (spriteRendered) return; // Pixel art sprite rendered successfully
         }
+        
+        // Use Bootstrap Icons (default or fallback)
+        this.createOrUpdateEntity(`door-${door.id}`, ICON_CONFIG.door, centerX, centerY, size, '#ffd700');
     }
 
     drawPlayer(player) {
@@ -218,8 +221,8 @@ class Renderer {
         const centerY = player.y + player.height / 2;
         const size = 32;
         
+        // Try pixel art first if enabled, otherwise use Bootstrap Icons
         if (this.usePixelArt) {
-            // Use pixel art sprite
             const spriteRendered = this.spriteManager.renderSprite(
                 this.ctx, 
                 'player', 
@@ -228,59 +231,29 @@ class Renderer {
                 size
             );
             
-            if (!spriteRendered) {
-                // Fallback to simple pixel art if no custom sprite
-                this.drawPixelArtPlayer(player, centerX, centerY, size);
-            }
-            
-            // Draw hidden indicator
-            if (player.hidden) {
-                this.ctx.globalAlpha = 0.3;
-                this.ctx.fillStyle = '#4CAF50';
-                this.ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
-                this.ctx.globalAlpha = 1.0;
-            } else if (player.invincible && Math.floor(Date.now() / 100) % 2 === 0) {
-                // Flash effect when invincible
-                this.ctx.globalAlpha = 0.5;
-                this.ctx.fillStyle = '#ff6b6b';
-                this.ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
-                this.ctx.globalAlpha = 1.0;
-            }
-        } else {
-            // Fallback to Bootstrap Icons
-            if (player.hidden) {
-                this.createOrUpdateEntity('player', 'bi-person-fill', centerX, centerY, size, '#4CAF50', 0, 0.3);
-            } else {
-                const color = player.invincible && Math.floor(Date.now() / 100) % 2 === 0 ? '#ff6b6b' : '#4a90e2';
-                this.createOrUpdateEntity('player', ICON_CONFIG.player, centerX, centerY, size, color);
+            if (spriteRendered) {
+                // Draw hidden/invincible effects
+                if (player.hidden) {
+                    this.ctx.globalAlpha = 0.3;
+                    this.ctx.fillStyle = '#4CAF50';
+                    this.ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
+                    this.ctx.globalAlpha = 1.0;
+                } else if (player.invincible && Math.floor(Date.now() / 100) % 2 === 0) {
+                    this.ctx.globalAlpha = 0.5;
+                    this.ctx.fillStyle = '#ff6b6b';
+                    this.ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
+                    this.ctx.globalAlpha = 1.0;
+                }
+                return; // Pixel art sprite rendered successfully
             }
         }
-    }
-
-    drawPixelArtPlayer(player, centerX, centerY, size) {
-        // Simple pixel art player (fallback)
-        const pixelSize = size / 8;
-        const startX = centerX - size/2;
-        const startY = centerY - size/2;
         
-        // Head
-        this.ctx.fillStyle = '#4a90e2';
-        this.fillPixelRect(startX + size/3, startY, size/3, size/3);
-        
-        // Body
-        this.fillPixelRect(startX + size/3, startY + size/3, size/3, size/2);
-        
-        // Legs
-        this.fillPixelRect(startX + size/3, startY + size*5/6, size/6, size/3);
-        this.fillPixelRect(startX + size/2, startY + size*5/6, size/6, size/3);
-    }
-
-    fillPixelRect(x, y, w, h) {
-        const pixelSize = 2;
-        for (let py = 0; py < h; py += pixelSize) {
-            for (let px = 0; px < w; px += pixelSize) {
-                this.ctx.fillRect(x + px, y + py, pixelSize, pixelSize);
-            }
+        // Use Bootstrap Icons (default or fallback)
+        if (player.hidden) {
+            this.createOrUpdateEntity('player', 'bi-person-fill', centerX, centerY, size, '#4CAF50', 0, 0.3);
+        } else {
+            const color = player.invincible && Math.floor(Date.now() / 100) % 2 === 0 ? '#ff6b6b' : '#4a90e2';
+            this.createOrUpdateEntity('player', ICON_CONFIG.player, centerX, centerY, size, color);
         }
     }
 
@@ -289,6 +262,7 @@ class Renderer {
         const centerY = enemy.y + enemy.height / 2;
         const size = 28;
         
+        // Try pixel art first if enabled
         if (this.usePixelArt) {
             const spriteRendered = this.spriteManager.renderSprite(
                 this.ctx,
@@ -297,24 +271,11 @@ class Renderer {
                 centerY - size/2,
                 size
             );
-            
-            if (!spriteRendered) {
-                // Fallback pixel art enemy
-                this.drawPixelArtEnemy(enemy, centerX, centerY, size);
-            }
-        } else {
-            this.createOrUpdateEntity(`enemy-${enemy.id}`, ICON_CONFIG.enemy, centerX, centerY, size, '#e74c3c');
+            if (spriteRendered) return; // Pixel art sprite rendered successfully
         }
-    }
-
-    drawPixelArtEnemy(enemy, centerX, centerY, size) {
-        const startX = centerX - size/2;
-        const startY = centerY - size/2;
         
-        // Simple red enemy shape
-        this.ctx.fillStyle = '#e74c3c';
-        this.fillPixelRect(startX + size/4, startY, size/2, size/2);
-        this.fillPixelRect(startX, startY + size/2, size, size/4);
+        // Use Bootstrap Icons (default or fallback)
+        this.createOrUpdateEntity(`enemy-${enemy.id}`, ICON_CONFIG.enemy, centerX, centerY, size, '#e74c3c');
     }
 
     drawInteractiveObject(obj) {
@@ -325,32 +286,42 @@ class Renderer {
         const size = 30;
 
         if (obj.type === "bomb") {
+            // Try pixel art first if enabled
             if (this.usePixelArt) {
-                if (obj.solved) {
-                    this.ctx.globalAlpha = 0.5;
-                    this.spriteManager.renderSprite(this.ctx, 'bomb', centerX - size/2, centerY - size/2, size);
-                    this.ctx.globalAlpha = 1.0;
-                } else {
-                    const pulse = Math.sin(Date.now() / 200) * 0.3 + 0.7;
-                    this.ctx.globalAlpha = pulse;
-                    this.spriteManager.renderSprite(this.ctx, 'bomb', centerX - size/2, centerY - size/2, size);
-                    this.ctx.globalAlpha = 1.0;
+                const spriteRendered = this.spriteManager.renderSprite(this.ctx, 'bomb', centerX - size/2, centerY - size/2, size);
+                if (spriteRendered) {
+                    if (obj.solved) {
+                        this.ctx.globalAlpha = 0.5;
+                        this.spriteManager.renderSprite(this.ctx, 'bomb', centerX - size/2, centerY - size/2, size);
+                        this.ctx.globalAlpha = 1.0;
+                    } else {
+                        const pulse = Math.sin(Date.now() / 200) * 0.3 + 0.7;
+                        this.ctx.globalAlpha = pulse;
+                        this.spriteManager.renderSprite(this.ctx, 'bomb', centerX - size/2, centerY - size/2, size);
+                        this.ctx.globalAlpha = 1.0;
+                    }
+                    return; // Pixel art sprite rendered successfully
                 }
-            } else {
-                const color = obj.solved ? '#777' : '#ff4d4d';
-                const iconSize = obj.solved ? size : size + Math.sin(Date.now() / 200) * 4;
-                this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.bomb, centerX, centerY, iconSize, color);
             }
+            
+            // Use Bootstrap Icons (default or fallback)
+            const color = obj.solved ? '#777' : '#ff4d4d';
+            const iconSize = obj.solved ? size : size + Math.sin(Date.now() / 200) * 4;
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.bomb, centerX, centerY, iconSize, color);
         } else if (obj.type === "loot") {
             if (obj.collected) {
                 this.removeEntity(`obj-${obj.id}`);
                 return;
             }
+            
+            // Try pixel art first if enabled
             if (this.usePixelArt) {
-                this.spriteManager.renderSprite(this.ctx, 'loot', centerX - size/2, centerY - size/2, size);
-            } else {
-                this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.loot, centerX, centerY, size, '#f39c12');
+                const spriteRendered = this.spriteManager.renderSprite(this.ctx, 'loot', centerX - size/2, centerY - size/2, size);
+                if (spriteRendered) return; // Pixel art sprite rendered successfully
             }
+            
+            // Use Bootstrap Icons (default or fallback)
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.loot, centerX, centerY, size, '#f39c12');
         } else if (obj.type === "trap_bomb") {
             if (obj.exploded) {
                 this.removeEntity(`obj-${obj.id}`);
@@ -412,19 +383,22 @@ class Renderer {
         const centerY = collectible.y + collectible.height / 2;
         const size = 24;
 
+        // Try pixel art first if enabled
         if (this.usePixelArt) {
             const spriteType = collectible.type === "secret" ? "secret" : collectible.type;
-            this.spriteManager.renderSprite(this.ctx, spriteType, centerX - size/2, centerY - size/2, size);
-        } else {
-            if (collectible.type === "key") {
-                this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.key, centerX, centerY, size, '#ffd700');
-            } else if (collectible.type === "money") {
-                this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.money, centerX, centerY, size, '#4CAF50');
-            } else if (collectible.type === "secret") {
-                this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.secret, centerX, centerY, size, '#9c27b0');
-            } else if (collectible.type === "health") {
-                this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.health, centerX, centerY, size, '#ff5252');
-            }
+            const spriteRendered = this.spriteManager.renderSprite(this.ctx, spriteType, centerX - size/2, centerY - size/2, size);
+            if (spriteRendered) return; // Pixel art sprite rendered successfully
+        }
+        
+        // Use Bootstrap Icons (default or fallback)
+        if (collectible.type === "key") {
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.key, centerX, centerY, size, '#ffd700');
+        } else if (collectible.type === "money") {
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.money, centerX, centerY, size, '#4CAF50');
+        } else if (collectible.type === "secret") {
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.secret, centerX, centerY, size, '#9c27b0');
+        } else if (collectible.type === "health") {
+            this.createOrUpdateEntity(`collectible-${collectible.id}`, ICON_CONFIG.health, centerX, centerY, size, '#ff5252');
         }
     }
 
@@ -595,14 +569,17 @@ class Renderer {
 
         // Draw projectiles (player)
         gameState.projectiles.forEach((projectile) => {
+            // Try pixel art first if enabled
             if (this.usePixelArt) {
-                this.spriteManager.renderSprite(this.ctx, 'projectile', projectile.x - 6, projectile.y - 6, 12);
-            } else {
-                this.ctx.fillStyle = '#ffeb3b';
-                this.ctx.beginPath();
-                this.ctx.arc(projectile.x, projectile.y, 6, 0, Math.PI * 2);
-                this.ctx.fill();
+                const spriteRendered = this.spriteManager.renderSprite(this.ctx, 'projectile', projectile.x - 6, projectile.y - 6, 12);
+                if (spriteRendered) return; // Pixel art sprite rendered successfully
             }
+            
+            // Use default rendering (default or fallback)
+            this.ctx.fillStyle = '#ffeb3b';
+            this.ctx.beginPath();
+            this.ctx.arc(projectile.x, projectile.y, 6, 0, Math.PI * 2);
+            this.ctx.fill();
         });
 
         // Draw enemy projectiles
