@@ -165,19 +165,10 @@ class Game {
 
     applyCanvasScale() {
         if (!this.canvas) return;
-        const layoutWidth = this.layoutEl?.clientWidth || window.innerWidth * 0.9;
-        let sidebarWidth = 0;
-        if (this.sidebarEl && this.gameContainerEl) {
-            const sidebarBeside = Math.abs(this.sidebarEl.offsetTop - this.gameContainerEl.offsetTop) < this.sidebarEl.offsetHeight;
-            if (sidebarBeside) {
-                sidebarWidth = this.sidebarEl.offsetWidth + 20;
-            }
-        }
-        const horizontalBudget = Math.max(320, Math.min(layoutWidth, window.innerWidth * 0.9) - sidebarWidth);
-        const verticalBudget = Math.max(320, window.innerHeight * 0.9);
-        const scaleX = Math.min(1, horizontalBudget / this.baseCanvasWidth);
-        const scaleY = Math.min(1, verticalBudget / this.baseCanvasHeight);
-        const scale = Math.min(scaleX, scaleY, 1);
+        const containerWidth = this.gameContainerEl?.clientWidth || Math.min(window.innerWidth * 0.9, window.innerWidth - 40);
+        const availableWidth = Math.max(320, containerWidth);
+        const availableHeight = Math.max(320, window.innerHeight * 0.9);
+        const scale = Math.min(1, availableWidth / this.baseCanvasWidth, availableHeight / this.baseCanvasHeight);
         const displayWidth = this.baseCanvasWidth * scale;
         const displayHeight = this.baseCanvasHeight * scale;
         this.canvas.style.width = `${displayWidth}px`;
