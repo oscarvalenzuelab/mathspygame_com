@@ -1,3 +1,7 @@
+:root {
+    --app-scale: 0.8;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -14,12 +18,27 @@ body {
     color: #fff;
     margin: 0;
     min-height: 100vh;
-    height: 100vh;
-    overflow: hidden;
+    height: auto;
+    overflow-y: auto;
 }
 
 html {
     height: 100%;
+}
+
+#app-scale-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: scale(var(--app-scale));
+    transform-origin: top center;
+}
+
+@media (max-width: 1100px) {
+    #app-scale-wrapper {
+        transform: none;
+    }
 }
 
 #app-layout {
@@ -33,7 +52,7 @@ html {
     margin: 0 auto;
     box-sizing: border-box;
     overflow-x: auto;
-    height: calc(100vh - 40px);
+    height: auto;
 }
 
 #game-container {
