@@ -145,6 +145,58 @@
             <div id="map-editor-grid"></div>
             <div id="map-editor-object-list" class="editor-object-list"></div>
             <textarea id="map-editor-export-output" rows="6" readonly></textarea>
+            <div class="editor-actions">
+                <button id="map-editor-sprite-editor-btn" class="editor-action-btn">
+                    <i class="bi bi-palette"></i> Sprite Editor
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pixel Art Editor -->
+    <div id="pixel-art-editor" class="modal hidden">
+        <div class="modal-content pixel-art-editor">
+            <h2>Pixel Art Sprite Editor</h2>
+            <div class="pixel-editor-toolbar">
+                <div class="pixel-editor-controls">
+                    <label>Sprite Type:</label>
+                    <select id="pixel-art-sprite-type">
+                        <option value="player">Player/Agent</option>
+                        <option value="enemy">Enemy</option>
+                        <option value="bomb">Bomb</option>
+                        <option value="loot">Intel Briefcase</option>
+                        <option value="key">Key</option>
+                        <option value="money">Money</option>
+                        <option value="secret">Secret Document</option>
+                        <option value="door">Door</option>
+                        <option value="projectile">Projectile</option>
+                    </select>
+                    <button id="pixel-art-load-btn">Load</button>
+                    <button id="pixel-art-clear-btn">Clear</button>
+                </div>
+                <div class="pixel-editor-tools">
+                    <button class="pixel-tool-btn active" data-pixel-tool="pencil">Pencil</button>
+                    <button class="pixel-tool-btn" data-pixel-tool="fill">Fill</button>
+                    <button class="pixel-tool-btn" data-pixel-tool="eraser">Eraser</button>
+                </div>
+                <div class="pixel-editor-actions">
+                    <button id="pixel-art-export-btn" class="primary">Export PNG</button>
+                    <button id="pixel-art-close-btn">Close</button>
+                </div>
+            </div>
+            <div class="pixel-editor-main">
+                <div class="pixel-editor-left">
+                    <div id="pixel-art-palette" class="color-palette"></div>
+                    <div class="pixel-preview">
+                        <label>Preview (16x16):</label>
+                        <canvas id="pixel-art-preview"></canvas>
+                    </div>
+                </div>
+                <div class="pixel-editor-center">
+                    <canvas id="pixel-art-canvas"></canvas>
+                    <p class="editor-hint">Click to draw pixels. Use tools: Pencil, Fill, or Eraser.</p>
+                </div>
+            </div>
         </div>
     </div>
 

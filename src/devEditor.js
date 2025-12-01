@@ -45,6 +45,8 @@ class DevEditor {
         this.objectModalCancelBtn = document.getElementById('editor-object-cancel-btn');
         this.modalContext = null;
 
+        this.spriteEditorBtn = document.getElementById('map-editor-sprite-editor-btn');
+        
         this.bindEvents();
         this.setActiveTool('tiles');
         this.setActiveTileType('floor');
@@ -71,6 +73,12 @@ class DevEditor {
         this.objectModalSaveBtn?.addEventListener('click', () => this.saveObjectModal());
         this.objectModalDeleteBtn?.addEventListener('click', () => this.deleteObjectFromModal());
         this.objectModalCancelBtn?.addEventListener('click', () => this.closeObjectModal());
+        
+        this.spriteEditorBtn?.addEventListener('click', () => {
+            if (this.game.pixelArtEditor) {
+                this.game.pixelArtEditor.open('player');
+            }
+        });
     }
 
     setActiveTool(tool) {

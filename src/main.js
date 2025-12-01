@@ -7,6 +7,7 @@ import MissionManager from './missions.js';
 import LevelManager from './levels.js';
 import AudioManager from './audio.js';
 import DevEditor from './devEditor.js';
+import PixelArtEditor from './pixelArtEditor.js';
 import { loadLayouts } from './levelLayouts/layoutLoader.js?v=20231130';
 
 class Game {
@@ -28,6 +29,7 @@ class Game {
         this.notificationContainer = document.getElementById('notification-container');
         this.audioManager = new AudioManager();
         this.devEditor = new DevEditor(this);
+        this.pixelArtEditor = new PixelArtEditor(this);
         this.gameState.setChangeListener(() => this.requestSave());
         this.allowPersistence = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
         this.pendingSave = false;
