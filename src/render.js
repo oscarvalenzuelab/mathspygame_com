@@ -328,6 +328,12 @@ class Renderer {
                 return;
             }
             this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.asset, centerX, centerY, size, '#ffd54f');
+        } else if (obj.type === 'vendor') {
+            if (!obj.active) {
+                this.removeEntity(`obj-${obj.id}`);
+                return;
+            }
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.vendor, centerX, centerY, size + 4, '#6ab04c');
         } else if (obj.type === "trap_bomb") {
             if (obj.exploded) {
                 this.removeEntity(`obj-${obj.id}`);

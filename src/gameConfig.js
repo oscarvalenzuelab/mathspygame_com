@@ -4,6 +4,7 @@ export const ICON_CONFIG = {
     bomb: 'bi-radioactive',
     loot: 'bi-briefcase-fill',
     asset: 'bi-folder-fill',
+    vendor: 'bi-person-hearts',
     key: 'bi-key-fill',
     money: 'bi-cash-coin',
     secret: 'bi-file-earmark-lock-fill',
@@ -18,7 +19,7 @@ const createLevelSpecs = () => {
     const specs = [];
     for (let level = 1; level <= TOTAL_LEVELS; level++) {
         const mathDifficulty = level <= 15 ? 1 : level <= 35 ? 2 : 3;
-        const missionType = level === 2 ? 'steal_secrets' : 'defuse_bombs';
+        const missionType = level === 2 ? 'steal_secrets' : level === 3 ? 'buy_intel' : 'defuse_bombs';
         specs.push({
             level,
             mathDifficulty,

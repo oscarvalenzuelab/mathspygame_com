@@ -75,6 +75,8 @@ class GameState {
             this.mapSystem.loadMap(levelData.map);
         }
 
+        this.missionType = levelData.missionType || 'defuse_bombs';
+
         // Initialize timer (default 2 minutes unless level overrides)
         this.levelTimeLimit = levelData.timeLimit || 120;
         this.levelTimer = this.levelTimeLimit;
@@ -563,6 +565,7 @@ class GameState {
             if (!obj.active || (obj.type === "bomb" && obj.solved) || 
                 (obj.type === "loot" && obj.collected) ||
                 (obj.type === 'secret_asset' && obj.collected) ||
+                (obj.type === 'vendor' && obj.collected) ||
                 obj.type === "trap_bomb") {
                 continue;
             }
@@ -627,6 +630,17 @@ class GameState {
             };
         }
 
+        if (obj.requires === 'money') {
+            if (this.inventory.money > 0) {
+                return { allowed: true };
+            }
+            return {
+                allowed: false,
+                type: 'requires_item',
+                message: obj.requirementMessage || 'You need more funds to do this!'
+            };
+        }
+
         return { allowed: true };
     }
 
@@ -681,6 +695,7 @@ class GameState {
         if (!obj) return;
 
         if (correct) {
+            this.consumeRequirementResource(obj);
             if (obj.type === "bomb") {
                 obj.solved = true;
                 obj.active = false;
@@ -700,6 +715,12 @@ class GameState {
                 this.inventory.secrets++;
                 this.hasIntel = true;
                 this.score += 175;
+            } else if (obj.type === 'vendor') {
+                obj.collected = true;
+                obj.active = false;
+                this.inventory.secrets++;
+                this.hasIntel = true;
+                this.score += 200;
             }
         } else {
             obj.wrongAttempts = (obj.wrongAttempts || 0) + 1;
@@ -715,6 +736,17 @@ class GameState {
             }
         }
         this.notifyChange();
+    }
+
+    consumeRequirementResource(obj) {
+        if (!obj.consumeRequirement || !obj.requires) return;
+        if (obj.requires === 'money' && this.inventory.money > 0) {
+            this.inventory.money -= 1;
+        } else if (obj.requires === 'key' && this.inventory.keys > 0) {
+            this.inventory.keys -= 1;
+        } else if (obj.requires === 'secret' && this.inventory.secrets > 0) {
+            this.inventory.secrets -= 1;
+        }
     }
 
     isColliding(rect1, rect2) {

@@ -26,6 +26,17 @@ class MissionManager {
                     completed: false
                 });
             });
+        } else if (missionType === 'buy_intel') {
+            const vendors = levelData.interactiveObjects.filter(obj => obj.type === 'vendor');
+            vendors.forEach((vendor, index) => {
+                missions.push({
+                    id: `deal-${vendor.id}`,
+                    description: vendor.displayName || `Purchase intel from contact #${index + 1}`,
+                    targetType: 'vendor',
+                    targetId: vendor.id,
+                    completed: false
+                });
+            });
         } else {
             const bombs = levelData.interactiveObjects.filter(obj => obj.type === 'bomb');
             bombs.forEach((bomb, index) => {

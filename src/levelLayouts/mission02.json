@@ -1,5 +1,10 @@
 {
   "missionType": "steal_secrets",
+  "assetLabels": [
+    "Steal bunker dossier",
+    "Recover communications log",
+    "Download security roster"
+  ],
   "layout": [
     {
       "x": 0,

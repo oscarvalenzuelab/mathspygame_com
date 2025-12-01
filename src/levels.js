@@ -277,7 +277,8 @@ class LevelManager {
             collected: false,
             requires,
             requirementMessage: definition.requirementMessage,
-            consumeRequirement: Boolean(definition.consumeRequirement)
+            consumeRequirement: Boolean(definition.consumeRequirement),
+            displayName: definition.displayName
         };
     }
 

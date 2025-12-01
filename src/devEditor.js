@@ -33,6 +33,7 @@ class DevEditor {
         this.objectModalEl = document.getElementById('editor-object-modal');
         this.objectModalTitle = document.getElementById('editor-object-modal-title');
         this.objectModalIdInput = document.getElementById('editor-object-id');
+        this.objectModalDisplayNameInput = document.getElementById('editor-object-display-name');
         this.objectModalTypeRow = document.getElementById('editor-object-type-row');
         this.objectModalTypeSelect = document.getElementById('editor-object-type');
         this.objectModalRequiresRow = document.getElementById('editor-object-requires-row');
@@ -251,6 +252,7 @@ class DevEditor {
         if (interactive) {
             if (interactive.type === 'loot') return 'I';
             if (interactive.type === 'secret_asset') return 'S';
+            if (interactive.type === 'vendor') return 'V';
             return 'B';
         }
         const collectible = this.objects.collectibles.find(item => this.pointInArea(gridX, gridY, item));
@@ -425,9 +427,10 @@ class DevEditor {
                     gridY,
                     gridWidth: 1,
                     gridHeight: 1,
-                    requires: tool === 'bomb' ? 'intel' : null,
+                    requires: tool === 'bomb' ? 'intel' : (tool === 'vendor' ? 'money' : null),
                     linkedTo: '',
-                    displayName: tool === 'secret_asset' ? `Secret asset ${gridX}-${gridY}` : undefined
+                    displayName: tool === 'secret_asset' ? `Secret asset ${gridX}-${gridY}` : (tool === 'vendor' ? 'Intel contact' : undefined),
+                    consumeRequirement: tool === 'vendor'
                 }
             };
         }
@@ -458,6 +461,9 @@ class DevEditor {
         const titleType = category === 'doors' ? 'Door' : (category === 'collectibles' ? 'Collectible' : obj.type === 'loot' ? 'Intel Briefcase' : obj.type === 'secret_asset' ? 'Secret Asset' : 'Bomb');
         this.objectModalTitle.textContent = `Edit ${titleType}`;
         this.objectModalIdInput.value = obj.id || '';
+        if (this.objectModalDisplayNameInput) {
+            this.objectModalDisplayNameInput.value = obj.displayName || '';
+        }
         this.populateLinkedOptions(obj.id, obj.linkedTo || '');
 
         // Type row
@@ -545,6 +551,9 @@ class DevEditor {
         if (!obj) return;
         obj.id = this.objectModalIdInput.value.trim();
         obj.linkedTo = this.objectModalLinkedSelect?.value || '';
+        if (this.objectModalDisplayNameInput) {
+            obj.displayName = this.objectModalDisplayNameInput.value.trim();
+        }
 
         if (category === 'collectibles') {
             obj.type = this.objectModalTypeSelect.value || obj.type;
@@ -673,10 +682,12 @@ class DevEditor {
                 gridY: obj.gridY,
                 gridWidth: obj.gridWidth || 1,
                 gridHeight: obj.gridHeight || 1,
-                requires: obj.requires || null
+                requires: obj.requires || null,
+                consumeRequirement: !!obj.consumeRequirement
             };
             if (obj.id) entry.id = obj.id;
             if (obj.linkedTo) entry.linkedTo = obj.linkedTo;
+            if (obj.displayName) entry.displayName = obj.displayName;
             return entry;
         });
     }
