@@ -1,4 +1,5 @@
 import { LEVEL_LAYOUTS } from './levelLayouts/layoutLoader.js?v=20231130';
+import { LEVEL_ITEM_CONFIG } from './gameConfig.js';
 
 const TILE_TYPES = ['floor', 'wall', 'door_locked', 'door_unlocked', 'obstacle'];
 const COLLECTIBLE_TYPES = ['key', 'secret', 'money', 'health'];
@@ -504,8 +505,7 @@ class DevEditor {
         this.objectList.innerHTML = entries.length ? entries.map(line => `<div>${line}</div>`).join('') : '<em>No mission objects placed yet.</em>';
     }
 
-    exportLayout() {
-        if (!this.outputArea) return;
+    buildMissionPayload() {
         const layout = [];
         this.tiles.forEach((row, y) => {
             row.forEach((tile, x) => {
@@ -524,6 +524,12 @@ class DevEditor {
         if (collectibles.length) payload.collectibles = collectibles;
         const interactive = this.serializeInteractive();
         if (interactive.length) payload.interactiveObjects = interactive;
+        return payload;
+    }
+
+    exportLayout() {
+        if (!this.outputArea) return;
+        const payload = this.buildMissionPayload();
         this.outputArea.value = JSON.stringify(payload, null, 2);
         this.outputArea.focus();
         this.outputArea.select();
@@ -577,12 +583,24 @@ class DevEditor {
     }
 
     applyChanges() {
-        const mapSystem = this.game.gameState.mapSystem;
-        mapSystem.tiles = this.tiles.map(row => [...row]);
-        mapSystem.mapHeight = mapSystem.tiles.length;
-        mapSystem.mapWidth = mapSystem.tiles[0] ? mapSystem.tiles[0].length : 0;
-        this.game.gameState.notifyChange();
-        this.game.showNotification('Map updated (dev)', 'info');
+        const payload = this.buildMissionPayload();
+        LEVEL_LAYOUTS[this.currentLevel] = payload;
+        const spec = LEVEL_ITEM_CONFIG.find(item => item.level === this.currentLevel);
+        if (!spec) {
+            console.warn('DevEditor: could not find spec for level', this.currentLevel);
+            this.game.showNotification('Failed to rebuild level from editor data', 'warning');
+            return;
+        }
+        const rebuiltLevel = this.game.levelManager.buildLevel(spec);
+        this.game.levelManager.levels[this.currentLevel] = rebuiltLevel;
+        this.levelBlueprint = rebuiltLevel;
+        this.game.loadLevel(this.currentLevel, { preserveDefeated: false });
+        this.game.gameState.isPaused = true;
+        this.tiles = this.game.gameState.mapSystem.tiles.map(row => [...row]);
+        this.loadObjects();
+        this.renderGrid();
+        this.renderObjectList();
+        this.game.showNotification('Mission updated (dev editor)', 'info');
     }
 
     close() {
