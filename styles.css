@@ -33,11 +33,15 @@ html {
     align-items: center;
     transform: scale(var(--app-scale));
     transform-origin: top center;
+    height: calc(100vh / var(--app-scale));
+    overflow: hidden;
 }
 
 @media (max-width: 1100px) {
     #app-scale-wrapper {
         transform: none;
+        height: auto;
+        overflow: visible;
     }
     body {
         height: auto;
@@ -56,7 +60,7 @@ html {
     margin: 0 auto;
     box-sizing: border-box;
     overflow-x: auto;
-    height: auto;
+    height: 100%;
 }
 
 #game-container {
