@@ -36,11 +36,14 @@ class SpriteManager {
             return false; // No custom sprite, use default
         }
 
-        const pixelSize = size / 16; // 16x16 grid
+        // Determine sprite dimensions (64x64 or fallback to 16x16 for old sprites)
+        const spriteWidth = sprite.pixels.length || 64;
+        const spriteHeight = sprite.pixels[0]?.length || 64;
+        const pixelSize = size / spriteWidth;
         const pixels = sprite.pixels;
 
-        for (let py = 0; py < 16; py++) {
-            for (let px = 0; px < 16; px++) {
+        for (let py = 0; py < spriteHeight; py++) {
+            for (let px = 0; px < spriteWidth; px++) {
                 const color = pixels[py] && pixels[py][px];
                 if (color) {
                     ctx.fillStyle = color;
@@ -61,13 +64,17 @@ class SpriteManager {
         const sprite = this.getSprite(type);
         if (!sprite) return null;
 
+        // Determine sprite dimensions (64x64 or fallback to 16x16 for old sprites)
+        const spriteWidth = sprite.pixels.length || 64;
+        const spriteHeight = sprite.pixels[0]?.length || 64;
+        
         const canvas = document.createElement('canvas');
-        canvas.width = 16;
-        canvas.height = 16;
+        canvas.width = spriteWidth;
+        canvas.height = spriteHeight;
         const ctx = canvas.getContext('2d');
 
-        for (let y = 0; y < 16; y++) {
-            for (let x = 0; x < 16; x++) {
+        for (let y = 0; y < spriteHeight; y++) {
+            for (let x = 0; x < spriteWidth; x++) {
                 const color = sprite.pixels[y] && sprite.pixels[y][x];
                 if (color) {
                     ctx.fillStyle = color;
