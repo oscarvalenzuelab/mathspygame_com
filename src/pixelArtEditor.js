@@ -243,7 +243,6 @@ class PixelArtEditor {
         this.exportBtn = document.getElementById('pixel-art-export-btn');
         this.clearBtn = document.getElementById('pixel-art-clear-btn');
         this.spriteTypeSelect = document.getElementById('pixel-art-sprite-type');
-        this.loadBtn = document.getElementById('pixel-art-load-btn');
         this.loadTemplateBtn = document.getElementById('pixel-art-load-template-btn');
         
         if (this.closeBtn) {
@@ -258,11 +257,9 @@ class PixelArtEditor {
         if (this.spriteTypeSelect) {
             this.spriteTypeSelect.addEventListener('change', (e) => {
                 this.spriteType = e.target.value;
+                // Auto-load saved sprite if available, otherwise start blank
                 this.loadSprite();
             });
-        }
-        if (this.loadBtn) {
-            this.loadBtn.addEventListener('click', () => this.loadSprite());
         }
         if (this.loadTemplateBtn) {
             this.loadTemplateBtn.addEventListener('click', () => this.loadTemplate());
