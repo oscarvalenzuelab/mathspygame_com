@@ -12,6 +12,9 @@ import { loadLayouts } from './levelLayouts/layoutLoader.js?v=20231130';
 class Game {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
+        this.layoutEl = document.getElementById('app-layout');
+        this.gameContainerEl = document.getElementById('game-container');
+        this.sidebarEl = document.getElementById('ui-sidebar');
         this.setupCanvas();
         this.deviceWarning = document.getElementById('device-warning');
         this.validateDeviceSupport();
@@ -36,6 +39,7 @@ class Game {
         
         // Setup entity container after renderer is created
         this.renderer.setupEntityContainer();
+        this.applyCanvasScale();
         
         this.lastTime = 0;
         this.isRunning = false;
@@ -59,7 +63,10 @@ class Game {
         }
         this.setupMusicAutoStart();
         this.setupAudioHooks();
-        window.addEventListener('resize', () => this.validateDeviceSupport());
+        window.addEventListener('resize', () => {
+            this.validateDeviceSupport();
+            this.applyCanvasScale();
+        });
     }
 
     validateDeviceSupport() {
@@ -78,6 +85,7 @@ class Game {
         this.gameState.currentLevel = levelNumber;
         this.missionManager.initializeLevel(levelNumber, levelData);
         this.renderer.updateMissionPanel(this.missionManager);
+        this.applyCanvasScale();
     }
 
     restoreProgress() {
@@ -148,48 +156,38 @@ class Game {
     }
 
     setupCanvas() {
-        // Set canvas size - auto-adjust to viewport
-        const maxWidth = Math.min(1200, window.innerWidth - 40);
-        const maxHeight = Math.min(800, window.innerHeight - 40);
-        
-        // Maintain aspect ratio
-        const aspectRatio = 1200 / 800;
-        let canvasWidth = maxWidth;
-        let canvasHeight = canvasWidth / aspectRatio;
-        
-        if (canvasHeight > maxHeight) {
-            canvasHeight = maxHeight;
-            canvasWidth = canvasHeight * aspectRatio;
+        this.baseCanvasWidth = 1200;
+        this.baseCanvasHeight = 800;
+        this.canvas.width = this.baseCanvasWidth;
+        this.canvas.height = this.baseCanvasHeight;
+        this.applyCanvasScale();
+    }
+
+    applyCanvasScale() {
+        if (!this.canvas) return;
+        const layoutWidth = this.layoutEl?.clientWidth || window.innerWidth * 0.9;
+        let sidebarWidth = 0;
+        if (this.sidebarEl && this.gameContainerEl) {
+            const sidebarBeside = Math.abs(this.sidebarEl.offsetTop - this.gameContainerEl.offsetTop) < this.sidebarEl.offsetHeight;
+            if (sidebarBeside) {
+                sidebarWidth = this.sidebarEl.offsetWidth + 20;
+            }
         }
-        
-        this.canvas.width = canvasWidth;
-        this.canvas.height = canvasHeight;
-        
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            const newMaxWidth = Math.min(1200, window.innerWidth - 40);
-            const newMaxHeight = Math.min(800, window.innerHeight - 40);
-            
-            let newCanvasWidth = newMaxWidth;
-            let newCanvasHeight = newCanvasWidth / aspectRatio;
-            
-            if (newCanvasHeight > newMaxHeight) {
-                newCanvasHeight = newMaxHeight;
-                newCanvasWidth = newCanvasHeight * aspectRatio;
-            }
-            
-            this.canvas.width = newCanvasWidth;
-            this.canvas.height = newCanvasHeight;
-            this.gameState.canvasWidth = newCanvasWidth;
-            this.gameState.canvasHeight = newCanvasHeight;
-            this.gameState.mapSystem.canvasWidth = newCanvasWidth;
-            this.gameState.mapSystem.canvasHeight = newCanvasHeight;
-            // Update renderer entity container
-            if (this.renderer.entityContainer) {
-                this.renderer.entityContainer.style.width = newCanvasWidth + 'px';
-                this.renderer.entityContainer.style.height = newCanvasHeight + 'px';
-            }
-        });
+        const horizontalBudget = Math.max(320, Math.min(layoutWidth, window.innerWidth * 0.9) - sidebarWidth);
+        const verticalBudget = Math.max(320, window.innerHeight * 0.9);
+        const scaleX = Math.min(1, horizontalBudget / this.baseCanvasWidth);
+        const scaleY = Math.min(1, verticalBudget / this.baseCanvasHeight);
+        const scale = Math.min(scaleX, scaleY, 1);
+        const displayWidth = this.baseCanvasWidth * scale;
+        const displayHeight = this.baseCanvasHeight * scale;
+        this.canvas.style.width = `${displayWidth}px`;
+        this.canvas.style.height = `${displayHeight}px`;
+        if (this.renderer) {
+            this.renderer.setDisplaySize(displayWidth, displayHeight, scale);
+        }
+        if (this.notificationContainer) {
+            this.notificationContainer.style.width = `${displayWidth}px`;
+        }
     }
 
     setupUI() {

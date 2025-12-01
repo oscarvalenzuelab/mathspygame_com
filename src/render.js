@@ -7,6 +7,7 @@ class Renderer {
         this.ctx = canvas.getContext('2d');
         this.entityContainer = null;
         this.entitiesDrawnThisFrame = new Set();
+        this.displayScale = 1;
         this.mapDrawnOnce = false;
         this.setupEntityContainer();
     }
@@ -26,11 +27,22 @@ class Renderer {
         this.entityContainer.style.position = 'absolute';
         this.entityContainer.style.top = '0';
         this.entityContainer.style.left = '0';
-        this.entityContainer.style.width = this.canvas.width + 'px';
-        this.entityContainer.style.height = this.canvas.height + 'px';
+        const width = this.canvas.clientWidth || this.canvas.width;
+        const height = this.canvas.clientHeight || this.canvas.height;
+        this.entityContainer.style.width = width + 'px';
+        this.entityContainer.style.height = height + 'px';
         this.entityContainer.style.pointerEvents = 'none';
         this.entityContainer.style.overflow = 'hidden';
+        this.displayScale = this.canvas.width ? width / this.canvas.width : 1;
         container.appendChild(this.entityContainer);
+    }
+
+    setDisplaySize(width, height, scale = 1) {
+        this.displayScale = scale;
+        if (this.entityContainer) {
+            this.entityContainer.style.width = width + 'px';
+            this.entityContainer.style.height = height + 'px';
+        }
     }
 
     createOrUpdateEntity(id, icon, x, y, size, color, rotation = 0, opacity = 1) {
@@ -48,12 +60,17 @@ class Renderer {
         }
         
         element.className = `bi ${icon}`;
-        element.style.left = (x - size / 2) + 'px';
-        element.style.top = (y - size / 2) + 'px';
+        const scale = this.displayScale || 1;
+        const scaledSize = size * scale;
+        const scaledLeft = (x - size / 2) * scale;
+        const scaledTop = (y - size / 2) * scale;
+        element.style.left = scaledLeft + 'px';
+        element.style.top = scaledTop + 'px';
         element.style.color = color;
         element.style.opacity = opacity;
         element.style.transform = `rotate(${rotation}deg)`;
         element.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+        element.style.fontSize = scaledSize + 'px';
         element.style.zIndex = '10';
         
         if (this.entitiesDrawnThisFrame) {

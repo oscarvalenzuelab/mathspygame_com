@@ -35,8 +35,10 @@ class InputManager {
         // Mouse events for shooting
         this.canvas.addEventListener('mousemove', (e) => {
             const rect = this.canvas.getBoundingClientRect();
-            this.mouseX = e.clientX - rect.left;
-            this.mouseY = e.clientY - rect.top;
+            const scaleX = rect.width ? this.canvas.width / rect.width : 1;
+            const scaleY = rect.height ? this.canvas.height / rect.height : 1;
+            this.mouseX = (e.clientX - rect.left) * scaleX;
+            this.mouseY = (e.clientY - rect.top) * scaleY;
         });
 
         this.canvas.addEventListener('mousedown', (e) => {

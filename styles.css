@@ -19,7 +19,9 @@ body {
     justify-content: center;
     align-items: flex-start;
     padding: 20px;
-    max-width: 1600px;
+    width: min(1600px, 90vw);
+    max-height: 90vh;
+    overflow: auto;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -28,6 +30,7 @@ body {
     position: relative;
     flex: 1 1 800px;
     max-width: 1100px;
+    max-height: 90vh;
 }
 
 .blurred {
@@ -464,11 +467,13 @@ body {
     background: #45a049;
 }
 #map-editor .modal-content.map-editor {
-    max-width: 900px;
+    width: min(900px, 90vw);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 #map-editor-grid {
-    max-height: 500px;
+    max-height: min(500px, 55vh);
     overflow: auto;
     margin: 15px 0;
     border: 1px solid #444;

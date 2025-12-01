@@ -391,7 +391,7 @@ class GameState {
     }
 
     updateMissionTimer(deltaTime) {
-        if (!this.timerActive || this.gameOver || this.won) return;
+        if (!this.timerActive || this.gameOver || this.won || this.isPaused) return;
 
         this.levelTimer -= deltaTime;
 
