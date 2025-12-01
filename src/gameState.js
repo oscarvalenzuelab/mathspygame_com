@@ -1,5 +1,6 @@
 // Core game state management
 import MapSystem from './map.js';
+import { LEVEL_SETTINGS } from './gameConfig.js';
 
 class GameState {
     constructor(canvasWidth, canvasHeight) {
