@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+.hidden {
+    display: none !important;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     background: #111;
@@ -521,6 +525,28 @@ body {
     align-items: center;
 }
 
+.editor-object-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.editor-tool-button {
+    background: #1f1f1f;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.editor-tool-button.active {
+    background: #2e7d32;
+    border-color: #66bb6a;
+}
+
 .editor-toolbar label {
     font-size: 12px;
     color: #ccc;
@@ -569,6 +595,42 @@ body {
     display: block;
     margin-top: 6px;
     color: #fff;
+}
+
+#editor-object-modal .modal-content {
+    max-width: 420px;
+}
+
+.editor-modal-row {
+    margin-bottom: 12px;
+}
+
+.editor-modal-row label {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: #ddd;
+    gap: 4px;
+}
+
+.editor-modal-row input,
+.editor-modal-row select {
+    background: #111;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px 8px;
+}
+
+.checkbox-label {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-buttons .danger {
+    background: #b71c1c;
+    border-color: #ef5350;
 }
 
 #map-editor-export-output {
