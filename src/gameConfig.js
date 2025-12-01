@@ -38,5 +38,5 @@ export const LEVEL_SETTINGS = {
     width: 30,
     height: 20,
     totalLevels: TOTAL_LEVELS,
-    tileSize: 32
+    tileSize: 40
 };
