@@ -106,6 +106,7 @@ class DevEditor {
         this.container.classList.remove('hidden');
         this.wasPaused = this.game.gameState.isPaused;
         this.game.gameState.isPaused = true;
+        this.game.inputManager?.resetInputs?.();
         this.active = true;
     }
 
@@ -659,8 +660,10 @@ class DevEditor {
         this.container.classList.add('hidden');
         this.active = false;
         this.game.gameState.isPaused = this.wasPaused || false;
+        this.game.inputManager?.resetInputs?.();
         this.closeObjectModal();
         this.setActiveTool('tiles');
+        this.setActiveTileType('floor');
     }
 }
 

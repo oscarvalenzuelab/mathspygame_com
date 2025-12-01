@@ -93,6 +93,13 @@ class InputManager {
         this.mouseJustPressed = false;
     }
 
+    resetInputs() {
+        this.keys = {};
+        this.keysPressed = {};
+        this.mousePressed = false;
+        this.mouseJustPressed = false;
+    }
+
     getMovementVector() {
         let dx = 0;
         let dy = 0;
