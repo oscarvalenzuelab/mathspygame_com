@@ -270,8 +270,12 @@ class PixelArtEditor {
             this.ctx = this.canvas.getContext('2d');
             this.canvas.width = this.gridSize * this.pixelSize;
             this.canvas.height = this.gridSize * this.pixelSize;
+            // Don't set style width/height to avoid scaling issues - let CSS handle it
+            // But ensure the canvas displays at the correct size
             this.canvas.style.width = this.canvas.width + 'px';
             this.canvas.style.height = this.canvas.height + 'px';
+            this.canvas.style.imageRendering = 'pixelated';
+            this.canvas.style.imageRendering = 'crisp-edges';
             
             this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
             this.canvas.addEventListener('mousemove', (e) => this.draw(e));
@@ -418,8 +422,22 @@ class PixelArtEditor {
 
     getPixelCoordinates(e) {
         const rect = this.canvas.getBoundingClientRect();
-        const x = Math.floor((e.clientX - rect.left) / this.pixelSize);
-        const y = Math.floor((e.clientY - rect.top) / this.pixelSize);
+        // Calculate the scale factor between actual canvas size and displayed size
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        
+        // Get mouse position relative to the canvas
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Convert to canvas coordinates (accounting for scaling)
+        const canvasX = mouseX * scaleX;
+        const canvasY = mouseY * scaleY;
+        
+        // Convert to grid coordinates
+        const x = Math.floor(canvasX / this.pixelSize);
+        const y = Math.floor(canvasY / this.pixelSize);
+        
         return { x, y };
     }
 
