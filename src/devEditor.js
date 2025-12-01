@@ -3,7 +3,7 @@ import { LEVEL_ITEM_CONFIG } from './gameConfig.js';
 
 const TILE_TYPES = ['floor', 'wall', 'door_locked', 'door_unlocked', 'obstacle'];
 const COLLECTIBLE_TYPES = ['key', 'secret', 'money', 'health'];
-const INTERACTIVE_TYPES = ['bomb', 'loot'];
+const INTERACTIVE_TYPES = ['bomb', 'loot', 'secret_asset'];
 const TOOL_BUTTONS = ['tiles', 'door', ...COLLECTIBLE_TYPES, ...INTERACTIVE_TYPES];
 
 class DevEditor {
@@ -248,7 +248,11 @@ class DevEditor {
         const door = this.objects.doors.find(item => this.pointInArea(gridX, gridY, item));
         if (door) return 'D';
         const interactive = this.objects.interactive.find(item => this.pointInArea(gridX, gridY, item));
-        if (interactive) return interactive.type === 'loot' ? 'I' : 'B';
+        if (interactive) {
+            if (interactive.type === 'loot') return 'I';
+            if (interactive.type === 'secret_asset') return 'S';
+            return 'B';
+        }
         const collectible = this.objects.collectibles.find(item => this.pointInArea(gridX, gridY, item));
         if (collectible) return collectible.type.toUpperCase().slice(0, 1);
         return '';
@@ -422,7 +426,8 @@ class DevEditor {
                     gridWidth: 1,
                     gridHeight: 1,
                     requires: tool === 'bomb' ? 'intel' : null,
-                    linkedTo: ''
+                    linkedTo: '',
+                    displayName: tool === 'secret_asset' ? `Secret asset ${gridX}-${gridY}` : undefined
                 }
             };
         }
@@ -450,7 +455,7 @@ class DevEditor {
         this.modalContext = { category, index };
         const obj = this.getObjectCollection(category)[index];
         if (!obj) return;
-        const titleType = category === 'doors' ? 'Door' : (category === 'collectibles' ? 'Collectible' : obj.type === 'loot' ? 'Intel Briefcase' : 'Bomb');
+        const titleType = category === 'doors' ? 'Door' : (category === 'collectibles' ? 'Collectible' : obj.type === 'loot' ? 'Intel Briefcase' : obj.type === 'secret_asset' ? 'Secret Asset' : 'Bomb');
         this.objectModalTitle.textContent = `Edit ${titleType}`;
         this.objectModalIdInput.value = obj.id || '';
         this.populateLinkedOptions(obj.id, obj.linkedTo || '');
@@ -606,6 +611,9 @@ class DevEditor {
             });
         });
         const payload = { layout };
+        if (this.levelBlueprint?.missionType) {
+            payload.missionType = this.levelBlueprint.missionType;
+        }
         if (this.levelBlueprint?.playerStart) {
             payload.playerStart = { x: this.levelBlueprint.playerStart.x, y: this.levelBlueprint.playerStart.y };
         }

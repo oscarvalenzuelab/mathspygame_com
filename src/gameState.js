@@ -562,6 +562,7 @@ class GameState {
         for (const obj of this.interactiveObjects) {
             if (!obj.active || (obj.type === "bomb" && obj.solved) || 
                 (obj.type === "loot" && obj.collected) ||
+                (obj.type === 'secret_asset' && obj.collected) ||
                 obj.type === "trap_bomb") {
                 continue;
             }
@@ -693,6 +694,12 @@ class GameState {
                 }
                 this.hasIntel = true;
                 this.score += 150;
+            } else if (obj.type === 'secret_asset') {
+                obj.collected = true;
+                obj.active = false;
+                this.inventory.secrets++;
+                this.hasIntel = true;
+                this.score += 175;
             }
         } else {
             obj.wrongAttempts = (obj.wrongAttempts || 0) + 1;

@@ -134,8 +134,10 @@ class LevelManager {
         const map = this.createMap(LEVEL_SETTINGS.width, LEVEL_SETTINGS.height, layout);
         const defaultStart = this.getPlayerStart(spec.level);
         const playerStart = missionConfig.playerStart ? resolvePoint(missionConfig.playerStart, defaultStart) : defaultStart;
+        const missionType = missionConfig.missionType || spec.missionType || 'defuse_bombs';
         const enemies = this.generateEnemies(spec);
-        const interactiveObjects = this.buildInteractiveObjects(spec, missionConfig);
+        let interactiveObjects = this.buildInteractiveObjects(spec, missionConfig, missionType);
+        interactiveObjects = this.applyMissionType(interactiveObjects, missionType, missionConfig);
         const collectibles = this.buildCollectibles(spec, missionConfig);
         const doors = this.buildDoors(spec, missionConfig);
 
@@ -148,7 +150,8 @@ class LevelManager {
             enemies,
             interactiveObjects,
             collectibles,
-            doors
+            doors,
+            missionType
         };
     }
 
@@ -242,21 +245,24 @@ class LevelManager {
         return loot;
     }
 
-    buildInteractiveObjects(spec, missionConfig) {
+    buildInteractiveObjects(spec, missionConfig, missionType) {
         if (missionConfig && Array.isArray(missionConfig.interactiveObjects)) {
             return missionConfig.interactiveObjects.map((definition, index) =>
                 this.createInteractiveObjectFromDefinition(spec.level, definition, index)
             );
         }
-        return [
-            ...this.generateBombs(spec),
-            ...this.generateLoot(spec)
-        ];
+        const objects = [];
+        if (missionType !== 'steal_secrets') {
+            objects.push(...this.generateBombs(spec));
+        }
+        objects.push(...this.generateLoot(spec));
+        return objects;
     }
 
     createInteractiveObjectFromDefinition(level, definition, index) {
         const type = definition.type || 'bomb';
-        const defaults = type === 'loot' ? DEFAULT_SIZES.loot : DEFAULT_SIZES.bomb;
+        const lootTypes = ['loot', 'secret_asset'];
+        const defaults = lootTypes.includes(type) ? DEFAULT_SIZES.loot : DEFAULT_SIZES.bomb;
         const rect = resolveRect(definition, defaults);
         const requires = definition.requires !== undefined ? definition.requires : (type === 'bomb' ? 'intel' : null);
         return {
@@ -273,6 +279,28 @@ class LevelManager {
             requirementMessage: definition.requirementMessage,
             consumeRequirement: Boolean(definition.consumeRequirement)
         };
+    }
+
+    applyMissionType(interactiveObjects, missionType, missionConfig) {
+        if (missionType === 'steal_secrets') {
+            let assetIndex = 0;
+            const labels = Array.isArray(missionConfig?.assetLabels) ? missionConfig.assetLabels : [];
+            return interactiveObjects.map(obj => {
+                if (obj.type === 'loot') {
+                    const label = labels[assetIndex] || `Steal secret file #${assetIndex + 1}`;
+                    const updated = {
+                        ...obj,
+                        type: 'secret_asset',
+                        missionCritical: true,
+                        displayName: label
+                    };
+                    assetIndex += 1;
+                    return updated;
+                }
+                return obj;
+            });
+        }
+        return interactiveObjects;
     }
 
     buildCollectibles(spec, missionConfig) {

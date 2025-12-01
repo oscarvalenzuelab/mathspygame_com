@@ -322,6 +322,12 @@ class Renderer {
             
             // Use Bootstrap Icons (default or fallback)
             this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.loot, centerX, centerY, size, '#f39c12');
+        } else if (obj.type === 'secret_asset') {
+            if (obj.collected) {
+                this.removeEntity(`obj-${obj.id}`);
+                return;
+            }
+            this.createOrUpdateEntity(`obj-${obj.id}`, ICON_CONFIG.asset, centerX, centerY, size, '#ffd54f');
         } else if (obj.type === "trap_bomb") {
             if (obj.exploded) {
                 this.removeEntity(`obj-${obj.id}`);
