@@ -125,11 +125,37 @@
                         <option value="obstacle">Obstacle</option>
                     </select>
                 </label>
+                <label>Object Mode:
+                    <select id="map-editor-object-mode">
+                        <option value="tiles">Paint Tiles Only</option>
+                        <option value="door">Door</option>
+                        <option value="key">Key</option>
+                        <option value="secret">Secret</option>
+                        <option value="money">Money</option>
+                        <option value="health">Health</option>
+                        <option value="bomb">Bomb</option>
+                        <option value="loot">Intel</option>
+                    </select>
+                </label>
+                <label id="map-editor-object-requires-wrapper" class="hidden">Requirement:
+                    <select id="map-editor-object-requires">
+                        <option value="">None</option>
+                        <option value="key">Key</option>
+                        <option value="secret">Secret</option>
+                        <option value="intel">Intel</option>
+                    </select>
+                </label>
+                <label id="map-editor-door-lock-wrapper" class="hidden">
+                    <input type="checkbox" id="map-editor-door-locked" checked>
+                    Locked
+                </label>
                 <button id="map-editor-export-btn">Export Layout</button>
                 <button id="map-editor-apply-btn">Apply</button>
                 <button id="map-editor-close-btn">Close</button>
             </div>
+            <p class="editor-hint">Select an object type to add/remove it on the grid. Exported JSON now includes doors, collectibles, and bombs.</p>
             <div id="map-editor-grid"></div>
+            <div id="map-editor-object-list" class="editor-object-list"></div>
             <textarea id="map-editor-export-output" rows="6" readonly></textarea>
         </div>
     </div>
