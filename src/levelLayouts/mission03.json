@@ -545,38 +545,6 @@
       "height": 20
     },
     {
-      "id": "money-3-1",
-      "type": "money",
-      "x": 220,
-      "y": 360,
-      "width": 20,
-      "height": 20
-    },
-    {
-      "id": "money-3-2",
-      "type": "money",
-      "x": 480,
-      "y": 200,
-      "width": 20,
-      "height": 20
-    },
-    {
-      "id": "money-3-3",
-      "type": "money",
-      "x": 620,
-      "y": 280,
-      "width": 20,
-      "height": 20
-    },
-    {
-      "id": "money-3-4",
-      "type": "money",
-      "x": 300,
-      "y": 520,
-      "width": 20,
-      "height": 20
-    },
-    {
       "id": "health-3-1",
       "type": "health",
       "x": 520,
@@ -591,6 +559,38 @@
       "y": 640,
       "width": 20,
       "height": 20
+    },
+    {
+      "id": "money-3-1",
+      "type": "money",
+      "gridX": 10,
+      "gridY": 8,
+      "gridWidth": 1,
+      "gridHeight": 1
+    },
+    {
+      "id": "money-3-2",
+      "type": "money",
+      "gridX": 18,
+      "gridY": 5,
+      "gridWidth": 1,
+      "gridHeight": 1
+    },
+    {
+      "id": "money-3-3",
+      "type": "money",
+      "gridX": 22,
+      "gridY": 12,
+      "gridWidth": 1,
+      "gridHeight": 1
+    },
+    {
+      "id": "money-3-4",
+      "type": "money",
+      "gridX": 12,
+      "gridY": 14,
+      "gridWidth": 1,
+      "gridHeight": 1
     }
   ],
   "doors": [
