@@ -3,7 +3,7 @@ import { LEVEL_ITEM_CONFIG } from './gameConfig.js';
 
 const TILE_TYPES = ['floor', 'wall', 'door_locked', 'door_unlocked', 'obstacle'];
 const COLLECTIBLE_TYPES = ['key', 'secret', 'money', 'health'];
-const INTERACTIVE_TYPES = ['bomb', 'loot', 'secret_asset'];
+const INTERACTIVE_TYPES = ['bomb', 'loot', 'secret_asset', 'vendor'];
 const TOOL_BUTTONS = ['tiles', 'door', ...COLLECTIBLE_TYPES, ...INTERACTIVE_TYPES];
 
 class DevEditor {
@@ -19,6 +19,7 @@ class DevEditor {
         this.outputArea = document.getElementById('map-editor-export-output');
         this.objectList = document.getElementById('map-editor-object-list');
         this.objectButtons = Array.from(document.querySelectorAll('#map-editor-object-buttons .editor-tool-button'));
+        this.missionTypeSelect = document.getElementById('editor-mission-type');
         this.activeTool = 'tiles';
         this.activeTileType = 'floor';
         this.objects = { doors: [], collectibles: [], interactive: [] };
@@ -29,6 +30,7 @@ class DevEditor {
         this.skipNextClick = false;
         this.wasPaused = false;
         this.idCounters = {};
+        this.currentMissionType = 'defuse_bombs';
 
         this.objectModalEl = document.getElementById('editor-object-modal');
         this.objectModalTitle = document.getElementById('editor-object-modal-title');
@@ -51,6 +53,7 @@ class DevEditor {
         this.bindEvents();
         this.setActiveTool('tiles');
         this.setActiveTileType('floor');
+        this.setMissionType('defuse_bombs');
     }
 
     bindEvents() {
@@ -66,6 +69,9 @@ class DevEditor {
 
         this.objectButtons.forEach(btn => {
             btn.addEventListener('click', () => this.setActiveTool(btn.dataset.editorTool));
+        });
+        this.missionTypeSelect?.addEventListener('change', () => {
+            this.currentMissionType = this.missionTypeSelect.value || 'defuse_bombs';
         });
         this.tileButtons.forEach(btn => {
             btn.addEventListener('click', () => this.setActiveTileType(btn.dataset.tileType));
@@ -96,6 +102,17 @@ class DevEditor {
         });
     }
 
+    setMissionType(type) {
+        this.currentMissionType = type || 'defuse_bombs';
+        if (this.missionTypeSelect) {
+            this.missionTypeSelect.value = this.currentMissionType;
+        }
+    }
+
+    getSelectedMissionType() {
+        return this.missionTypeSelect?.value || this.currentMissionType || 'defuse_bombs';
+    }
+
     getSelectedTile() {
         return this.activeTileType || 'floor';
     }
@@ -112,6 +129,7 @@ class DevEditor {
         this.renderGrid();
         this.renderObjectList();
         this.outputArea.value = '';
+        this.setMissionType(this.levelBlueprint?.missionType || 'defuse_bombs');
         this.container.classList.remove('hidden');
         this.wasPaused = this.game.gameState.isPaused;
         this.game.gameState.isPaused = true;
@@ -190,7 +208,9 @@ class DevEditor {
             gridWidth: typeof obj.gridWidth === 'number' ? obj.gridWidth : Math.max(1, Math.round((obj.width || this.tileSize) / this.tileSize)),
             gridHeight: typeof obj.gridHeight === 'number' ? obj.gridHeight : Math.max(1, Math.round((obj.height || this.tileSize) / this.tileSize)),
             requires: obj.requires || (obj.type === 'bomb' ? 'intel' : null),
-            linkedTo: obj.linkedTo || ''
+            linkedTo: obj.linkedTo || '',
+            consumeRequirement: !!obj.consumeRequirement,
+            displayName: obj.displayName || ''
         };
     }
 
@@ -619,10 +639,10 @@ class DevEditor {
                 }
             });
         });
-        const payload = { layout };
-        if (this.levelBlueprint?.missionType) {
-            payload.missionType = this.levelBlueprint.missionType;
-        }
+        const payload = {
+            missionType: this.getSelectedMissionType(),
+            layout
+        };
         if (this.levelBlueprint?.playerStart) {
             payload.playerStart = { x: this.levelBlueprint.playerStart.x, y: this.levelBlueprint.playerStart.y };
         }
@@ -711,7 +731,8 @@ class DevEditor {
         this.loadObjects();
         this.renderGrid();
         this.renderObjectList();
-        this.game.showNotification('Mission updated (dev editor)', 'info');
+        this.setMissionType(payload.missionType);
+        this.game.showNotification('Game editor update applied', 'info');
     }
 
     close() {
@@ -723,6 +744,7 @@ class DevEditor {
         this.closeObjectModal();
         this.setActiveTool('tiles');
         this.setActiveTileType('floor');
+        this.setMissionType('defuse_bombs');
     }
 }
 

@@ -97,7 +97,7 @@
                     <button id="dev-level-btn" class="control-button hidden" title="Jump Level">
                         <i class="bi bi-fast-forward"></i>
                     </button>
-                    <button id="dev-editor-btn" class="control-button hidden" title="Open Map Editor">
+                    <button id="dev-editor-btn" class="control-button hidden" title="Open Game Editor">
                         <i class="bi bi-pencil-square"></i>
                     </button>
                 </div>
@@ -122,27 +122,37 @@
         </div>
     </div>
 
-    <div id="map-editor" class="modal hidden">
-        <div class="modal-content map-editor">
-            <h2>Map Editor (Dev)</h2>
-            <div class="editor-toolbar">
-                <div id="map-editor-tile-buttons" class="editor-tile-buttons" aria-label="Tile Brush">
-                    <button class="editor-tile-button active" data-tile-type="floor">Floor</button>
+        <div id="map-editor" class="modal hidden">
+            <div class="modal-content map-editor">
+                <h2>Game Editor (Dev)</h2>
+                <div class="editor-toolbar">
+                    <div id="map-editor-tile-buttons" class="editor-tile-buttons" aria-label="Tile Brush">
+                        <button class="editor-tile-button active" data-tile-type="floor">Floor</button>
                     <button class="editor-tile-button" data-tile-type="wall">Wall</button>
                     <button class="editor-tile-button" data-tile-type="door_locked">Locked Door</button>
                     <button class="editor-tile-button" data-tile-type="door_unlocked">Open Door</button>
                     <button class="editor-tile-button" data-tile-type="obstacle">Obstacle</button>
                 </div>
-                <div id="map-editor-object-buttons" class="editor-object-buttons">
-                    <button class="editor-tool-button active" data-editor-tool="tiles">Tile Brush</button>
-                    <button class="editor-tool-button" data-editor-tool="door">Door</button>
-                    <button class="editor-tool-button" data-editor-tool="key">Key</button>
-                    <button class="editor-tool-button" data-editor-tool="secret">Secret</button>
-                    <button class="editor-tool-button" data-editor-tool="money">Money</button>
-                    <button class="editor-tool-button" data-editor-tool="health">Health</button>
-                    <button class="editor-tool-button" data-editor-tool="bomb">Bomb</button>
-                    <button class="editor-tool-button" data-editor-tool="loot">Intel Briefcase</button>
-                    <button class="editor-tool-button" data-editor-tool="secret_asset">Secret Asset</button>
+                <div class="editor-controls">
+                    <label class="mission-type-label">Mission Type
+                        <select id="editor-mission-type">
+                            <option value="defuse_bombs">Defuse Bombs</option>
+                            <option value="steal_secrets">Steal Secrets</option>
+                            <option value="buy_intel">Buy Intel</option>
+                        </select>
+                    </label>
+                    <div id="map-editor-object-buttons" class="editor-object-buttons">
+                        <button class="editor-tool-button active" data-editor-tool="tiles">Tile Brush</button>
+                        <button class="editor-tool-button" data-editor-tool="door">Door</button>
+                        <button class="editor-tool-button" data-editor-tool="key">Key</button>
+                        <button class="editor-tool-button" data-editor-tool="secret">Secret</button>
+                        <button class="editor-tool-button" data-editor-tool="money">Money</button>
+                        <button class="editor-tool-button" data-editor-tool="health">Health</button>
+                        <button class="editor-tool-button" data-editor-tool="bomb">Bomb</button>
+                        <button class="editor-tool-button" data-editor-tool="loot">Intel Briefcase</button>
+                        <button class="editor-tool-button" data-editor-tool="secret_asset">Secret Asset</button>
+                        <button class="editor-tool-button" data-editor-tool="vendor">Vendor</button>
+                    </div>
                 </div>
                 <button id="map-editor-sprite-editor-btn" class="editor-action-btn">
                     <i class="bi bi-palette"></i> Sprite Editor
