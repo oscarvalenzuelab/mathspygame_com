@@ -18,7 +18,7 @@ body {
 
 #app-layout {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 25px;
     justify-content: center;
     align-items: flex-start;
@@ -26,6 +26,7 @@ body {
     width: min(1600px, 95vw);
     margin: 0 auto;
     box-sizing: border-box;
+    overflow-x: auto;
 }
 
 #game-container {
@@ -40,7 +41,7 @@ body {
 }
 
 #ui-sidebar {
-    width: 320px;
+    flex: 0 0 320px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -50,6 +51,7 @@ body {
     #app-layout {
         flex-direction: column;
         align-items: center;
+        flex-wrap: wrap;
     }
 
     #game-container {
