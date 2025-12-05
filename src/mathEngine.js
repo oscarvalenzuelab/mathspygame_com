@@ -53,7 +53,8 @@ class MathEngine {
             default:
                 max = 10;
         }
-        return Math.floor(Math.random() * max) + 1;
+        // Exclude 1: generate numbers from 2 to max
+        return Math.floor(Math.random() * (max - 1)) + 2;
     }
 
     checkAnswer(userAnswer, correctAnswer) {

@@ -25,11 +25,11 @@ class GameState {
             hideTimeRemaining: 0
         };
 
-        // Inventory
+        // Inventory - keys and secrets track IDs, money tracks count
         this.inventory = {
-            keys: 0,
+            keys: new Set(), // Set of collected key IDs
             money: 0,
-            secrets: 0
+            secrets: new Set() // Set of collected secret IDs
         };
 
         // Enemies
@@ -77,6 +77,11 @@ class GameState {
         }
 
         this.missionType = levelData.missionType || 'defuse_bombs';
+
+        // Clear level-specific inventory (keys and secrets don't carry between levels)
+        this.inventory.keys.clear();
+        this.inventory.secrets.clear();
+        // Money persists across levels
 
         // Initialize timer (default 2 minutes unless level overrides)
         this.levelTimeLimit = levelData.timeLimit || 120;
@@ -375,7 +380,7 @@ class GameState {
             }
 
             // Check collision with player
-            if (this.spawnGraceTimer <= 0 && this.isColliding(projectile, this.player) && !this.player.invincible) {
+            if (!this.isPaused && this.spawnGraceTimer <= 0 && this.isColliding(projectile, this.player) && !this.player.invincible) {
                 this.player.health -= 15;
                 this.player.invincible = true;
                 this.player.invincibleTime = 1.0;
@@ -460,7 +465,7 @@ class GameState {
         // Player vs Enemies (only if not hidden)
         if (!this.player.hidden) {
             this.enemies.forEach(enemy => {
-                if (this.isColliding(this.player, enemy) && !this.player.invincible) {
+                if (!this.isPaused && this.isColliding(this.player, enemy) && !this.player.invincible) {
                     this.player.health -= 10;
                     this.player.invincible = true;
                     this.player.invincibleTime = 1.0; // 1 second invincibility
@@ -499,28 +504,62 @@ class GameState {
 
             if (distance < 50 && inputManager.isActionPressed()) {
                 // Check if player has required key/secret
-                if (door.requires === "key" && this.inventory.keys > 0) {
-                    this.inventory.keys--;
-                    door.unlocked = true;
-                    this.unlockDoorInMap(door);
-                    this.score += 25;
-                    this.notifyChange();
-                    inputManager.onDoorSuccess?.();
-                    return { type: "door_unlocked", door: door };
-                } else if (door.requires === "secret" && this.inventory.secrets > 0) {
-                    this.inventory.secrets--;
-                    door.unlocked = true;
-                    this.unlockDoorInMap(door);
-                    this.score += 50;
-                    this.notifyChange();
-                    inputManager.onDoorSuccess?.();
-                    return { type: "door_unlocked", door: door };
-                } else if (door.requires === "key" && this.inventory.keys === 0) {
-                    inputManager.onDoorBlocked?.();
-                    return { type: "door_locked", message: "You need a key to unlock this door!" };
-                } else if (door.requires === "secret" && this.inventory.secrets === 0) {
-                    inputManager.onDoorBlocked?.();
-                    return { type: "door_locked", message: "You need a secret combination to unlock this door!" };
+                if (door.requires === "key") {
+                    // Check if door requires a specific key ID
+                    if (door.linkedTo && this.inventory.keys.has(door.linkedTo)) {
+                        this.inventory.keys.delete(door.linkedTo);
+                        door.unlocked = true;
+                        this.unlockDoorInMap(door);
+                        this.score += 25;
+                        this.notifyChange();
+                        inputManager.onDoorSuccess?.();
+                        return { type: "door_unlocked", door: door };
+                    } else if (!door.linkedTo && this.inventory.keys.size > 0) {
+                        // Door doesn't require specific key, use any key
+                        const firstKey = this.inventory.keys.values().next().value;
+                        this.inventory.keys.delete(firstKey);
+                        door.unlocked = true;
+                        this.unlockDoorInMap(door);
+                        this.score += 25;
+                        this.notifyChange();
+                        inputManager.onDoorSuccess?.();
+                        return { type: "door_unlocked", door: door };
+                    } else {
+                        inputManager.onDoorBlocked?.();
+                        if (door.linkedTo) {
+                            return { type: "door_locked", message: "You need the specific key for this door!" };
+                        } else {
+                            return { type: "door_locked", message: "You need a key to unlock this door!" };
+                        }
+                    }
+                } else if (door.requires === "secret") {
+                    // Check if door requires a specific secret ID
+                    if (door.linkedTo && this.inventory.secrets.has(door.linkedTo)) {
+                        this.inventory.secrets.delete(door.linkedTo);
+                        door.unlocked = true;
+                        this.unlockDoorInMap(door);
+                        this.score += 50;
+                        this.notifyChange();
+                        inputManager.onDoorSuccess?.();
+                        return { type: "door_unlocked", door: door };
+                    } else if (!door.linkedTo && this.inventory.secrets.size > 0) {
+                        // Door doesn't require specific secret, use any secret
+                        const firstSecret = this.inventory.secrets.values().next().value;
+                        this.inventory.secrets.delete(firstSecret);
+                        door.unlocked = true;
+                        this.unlockDoorInMap(door);
+                        this.score += 50;
+                        this.notifyChange();
+                        inputManager.onDoorSuccess?.();
+                        return { type: "door_unlocked", door: door };
+                    } else {
+                        inputManager.onDoorBlocked?.();
+                        if (door.linkedTo) {
+                            return { type: "door_locked", message: "You need the specific secret combination for this door!" };
+                        } else {
+                            return { type: "door_locked", message: "You need a secret combination to unlock this door!" };
+                        }
+                    }
                 }
             }
         }
@@ -586,7 +625,7 @@ class GameState {
         }
 
         if (obj.requires === 'key') {
-            if (this.inventory.keys > 0) {
+            if (this.inventory.keys.size > 0) {
                 return { allowed: true };
             }
             return {
@@ -597,7 +636,7 @@ class GameState {
         }
 
         if (obj.requires === 'secret') {
-            if (this.inventory.secrets > 0) {
+            if (this.inventory.secrets.size > 0) {
                 return { allowed: true };
             }
             return {
@@ -699,7 +738,7 @@ class GameState {
                 obj.collected = true;
                 obj.active = false;
                 if (!obj.grantedSecret) {
-                    this.inventory.secrets++;
+                    this.inventory.secrets.add(obj.id);
                     obj.grantedSecret = true;
                 }
                 this.hasIntel = true;
@@ -707,13 +746,13 @@ class GameState {
             } else if (obj && obj.type === 'secret_asset') {
                 obj.collected = true;
                 obj.active = false;
-                this.inventory.secrets++;
+                this.inventory.secrets.add(obj.id);
                 this.hasIntel = true;
                 this.score += 175;
             } else if (obj && obj.type === 'vendor') {
                 obj.collected = true;
                 obj.active = false;
-                this.inventory.secrets++;
+                this.inventory.secrets.add(obj.id);
                 this.hasIntel = true;
                 this.score += 200;
             } else if (collectibleTarget) {
@@ -728,7 +767,7 @@ class GameState {
                 }
             }
             // Wrong answer penalty
-            this.player.health -= 15;
+            this.player.health -= 5;
             if (this.player.health <= 0) {
                 this.player.health = 0;
                 this.gameOver = true;
@@ -742,13 +781,13 @@ class GameState {
         if (!collectible || collectible.collected) return;
         collectible.collected = true;
         if (collectible.type === "key") {
-            this.inventory.keys++;
+            this.inventory.keys.add(collectible.id);
             this.score += 25;
         } else if (collectible.type === "money") {
             this.inventory.money++;
             this.score += 10;
         } else if (collectible.type === "secret") {
-            this.inventory.secrets++;
+            this.inventory.secrets.add(collectible.id);
             this.score += 50;
         } else if (collectible.type === "health") {
             const healAmount = Math.round(this.player.maxHealth * 0.1);
@@ -761,10 +800,12 @@ class GameState {
         if (!obj.consumeRequirement || !obj.requires) return;
         if (obj.requires === 'money' && this.inventory.money > 0) {
             this.inventory.money -= 1;
-        } else if (obj.requires === 'key' && this.inventory.keys > 0) {
-            this.inventory.keys -= 1;
-        } else if (obj.requires === 'secret' && this.inventory.secrets > 0) {
-            this.inventory.secrets -= 1;
+        } else if (obj.requires === 'key' && this.inventory.keys.size > 0) {
+            const firstKey = this.inventory.keys.values().next().value;
+            this.inventory.keys.delete(firstKey);
+        } else if (obj.requires === 'secret' && this.inventory.secrets.size > 0) {
+            const firstSecret = this.inventory.secrets.values().next().value;
+            this.inventory.secrets.delete(firstSecret);
         }
     }
 
@@ -795,7 +836,11 @@ class GameState {
                 hideUsed: this.player.hideUsed,
                 hideTimeRemaining: this.player.hideTimeRemaining
             },
-            inventory: { ...this.inventory },
+            inventory: {
+                keys: Array.from(this.inventory.keys),
+                money: this.inventory.money,
+                secrets: Array.from(this.inventory.secrets)
+            },
             score: this.score,
             doors: this.doors.map(door => ({ id: door.id, unlocked: door.unlocked })),
             interactiveObjects: this.interactiveObjects.map(obj => ({
@@ -836,9 +881,9 @@ class GameState {
 
         if (data.inventory) {
             this.inventory = {
-                keys: data.inventory.keys ?? this.inventory.keys,
+                keys: Array.isArray(data.inventory.keys) ? new Set(data.inventory.keys) : this.inventory.keys,
                 money: data.inventory.money ?? this.inventory.money,
-                secrets: data.inventory.secrets ?? this.inventory.secrets
+                secrets: Array.isArray(data.inventory.secrets) ? new Set(data.inventory.secrets) : this.inventory.secrets
             };
         }
 

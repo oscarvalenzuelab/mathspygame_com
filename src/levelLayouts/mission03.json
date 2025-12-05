@@ -515,7 +515,7 @@
       "width": 30,
       "height": 30,
       "requires": "money_all",
-      "consumeRequirement": false,
+      "consumeRequirement": true,
       "displayName": "Pay the informant",
       "requirementMessage": "Gather all cash before meeting the informant!"
     },

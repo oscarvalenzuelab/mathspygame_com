@@ -668,9 +668,9 @@ class Renderer {
         const moneyEl = document.getElementById('money-count');
         const secretsEl = document.getElementById('secrets-count');
 
-        if (keysEl) keysEl.textContent = gameState.inventory.keys;
+        if (keysEl) keysEl.textContent = gameState.inventory.keys.size;
         if (moneyEl) moneyEl.textContent = gameState.inventory.money;
-        if (secretsEl) secretsEl.textContent = gameState.inventory.secrets;
+        if (secretsEl) secretsEl.textContent = gameState.inventory.secrets.size;
     }
 
     updateMissionPanel(missionManager) {
